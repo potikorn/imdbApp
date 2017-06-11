@@ -1,5 +1,6 @@
 package com.example.potikorn.movielists;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,8 @@ import com.example.potikorn.movielists.fetchapi.ApisContract;
 import com.example.potikorn.movielists.fetchapi.ApisPresenterImpl;
 import com.example.potikorn.movielists.httpmanager.ApisService;
 
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +30,7 @@ public class MainFragment extends Fragment implements ApisContract.ApisView {
     private RecyclerView recyclerView;
     private FilmAdapter filmAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private Film films;
 
     public MainFragment() {
         super();
@@ -42,9 +46,6 @@ public class MainFragment extends Fragment implements ApisContract.ApisView {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-//        if (savedInstanceState != null)
-//            onViewStateRestored(savedInstanceState);
     }
 
     @Nullable
@@ -58,7 +59,10 @@ public class MainFragment extends Fragment implements ApisContract.ApisView {
     @Override
     public void onResume() {
         super.onResume();
-        presenter.loadData(ApisService.getMoviesApi().getMovieList("Pirates of the Caribbean"));
+        if (films == null)
+            presenter.loadData(ApisService.getMoviesApi().getMovieList("Pirates of the Caribbean"));
+        else
+            initData();
     }
 
     @Override
@@ -67,12 +71,21 @@ public class MainFragment extends Fragment implements ApisContract.ApisView {
         presenter.onDestroy();
     }
 
-//    @Override
-//    public void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//        outState.putParcelable("data", Parcels.wrap(film));
-//    }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable("data", Parcels.wrap(films));
+    }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            films = Parcels.unwrap(savedInstanceState.getParcelable("data"));
+        } else {
+            presenter.loadData(ApisService.getMoviesApi().getMovieList("Pirates of the Caribbean"));
+        }
+    }
 
     private void initInstance(View view) {
         presenter = new ApisPresenterImpl(this);
@@ -86,7 +99,7 @@ public class MainFragment extends Fragment implements ApisContract.ApisView {
         });
     }
 
-    private void initData(Film films) {
+    private void initData() {
 
         if (film != null)
             film.clear();
@@ -128,9 +141,9 @@ public class MainFragment extends Fragment implements ApisContract.ApisView {
 
     @Override
     public <T> void onLoadSuccess(T newDao) {
-        Film films = (Film) newDao;
+        films = (Film) newDao;
         Log.d("Ok succuess", "OK onload");
-        initData(films);
+        initData();
     }
 
     @Override
