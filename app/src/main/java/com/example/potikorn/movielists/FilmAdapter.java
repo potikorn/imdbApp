@@ -1,6 +1,8 @@
 package com.example.potikorn.movielists;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +15,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
-import com.example.potikorn.movielists.dao.FilmModel;
+import com.example.potikorn.movielists.room.FilmEntity;
 
 import java.util.List;
 
@@ -21,31 +23,33 @@ public class FilmAdapter extends RecyclerView.Adapter<FilmAdapter.FilmHolder> {
 
     private final String BASE_IMAGE_URL = "https://image.tmdb.org/t/p/w500";
 
-    private List<FilmModel> films;
+    private List<FilmEntity> films;
     private OnFilmClickListener onFilmClickListener;
     private Context context;
     private String popularityAndPublished;
 
-    public FilmAdapter(List<FilmModel> films, OnFilmClickListener onFilmClickListener, Context context) {
-        this.films = films;
+    public FilmAdapter(OnFilmClickListener onFilmClickListener,
+                       Context context) {
         this.onFilmClickListener = onFilmClickListener;
         this.context = context;
     }
 
-    public void setFilms(List<FilmModel> films) {
+    public void setFilms(List<FilmEntity> films) {
         this.films = films;
         notifyDataSetChanged();
     }
 
+    @NonNull
     @Override
-    public FilmHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public FilmHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_movie_item, parent, false);
         return new FilmHolder(view, onFilmClickListener);
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
     public void onBindViewHolder(FilmHolder holder, int position) {
-        FilmModel item = films.get(position);
+        FilmEntity item = films.get(position);
         holder.film = item;
         holder.title.setText(item.getTitle());
 
@@ -79,9 +83,14 @@ public class FilmAdapter extends RecyclerView.Adapter<FilmAdapter.FilmHolder> {
         }
     }
 
+    public void clearItems() {
+        films.clear();
+        notifyDataSetChanged();
+    }
+
     static class FilmHolder extends RecyclerView.ViewHolder {
 
-        FilmModel film;
+        FilmEntity film;
         TextView title;
         TextView overview;
         TextView releaseAndPopular;
@@ -104,7 +113,7 @@ public class FilmAdapter extends RecyclerView.Adapter<FilmAdapter.FilmHolder> {
     }
 
     public interface OnFilmClickListener {
-        void onFilmClick(FilmModel film);
+        void onFilmClick(FilmEntity film);
     }
 
 }

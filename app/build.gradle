@@ -34,15 +34,10 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     compile "com.github.bumptech.glide:glide:3.7.0"
 
-
-    compile 'com.squareup.retrofit2:retrofit:2.4.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.4.0'
-    compile "com.squareup.retrofit2:adapter-rxjava:2.2.0"
-    compile "com.squareup.okhttp3:logging-interceptor:3.10.0"
-
     compile 'com.jakewharton.timber:timber:4.5.1'
 
-    compile 'io.reactivex:rxandroid:1.2.1'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.14'
 
     compile "org.parceler:parceler-api:1.1.9"
     annotationProcessor "org.parceler:parceler:1.1.9"
@@ -62,6 +57,17 @@ dependencies {
     kapt "android.arch.lifecycle:compiler:$archVersion"
     implementation "android.arch.persistence.room:runtime:$archVersion"
     kapt "android.arch.persistence.room:compiler:$archVersion"
+    implementation "android.arch.persistence.room:rxjava2:$archVersion"
+
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation "com.squareup.retrofit2:converter-gson:2.4.0"
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+
+    String daggerVersion = '2.13'
+    implementation "com.google.dagger:dagger:$daggerVersion"
+    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 repositories {
