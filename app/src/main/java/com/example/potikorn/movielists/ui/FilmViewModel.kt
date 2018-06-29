@@ -14,9 +14,14 @@ class FilmViewModel @Inject constructor(private val filmRepository: FilmReposito
     val liveFilmData = MutableLiveData<Film>()
     val error = MutableLiveData<String>()
 
-    fun loadFilmList(query: String){
+    fun searchFilmList(query: String) {
         isLoading.value = true
         filmRepository.getFilmList(query, this)
+    }
+
+    fun loadNowPlayingList() {
+        isLoading.value = true
+        filmRepository.getNowPlayingList(this)
     }
 
     override fun onSuccess(body: Film?) {

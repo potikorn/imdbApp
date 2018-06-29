@@ -17,4 +17,11 @@ class FilmRepository @Inject constructor(private val remoteFilmDataSource: Remot
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(BaseSubscriber(callback))
     }
+
+    fun getNowPlayingList(callback: BaseSubscriber.SubscribeCallback<Film>) {
+        remoteFilmDataSource.requestNowPlayingList()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(BaseSubscriber(callback))
+    }
 }

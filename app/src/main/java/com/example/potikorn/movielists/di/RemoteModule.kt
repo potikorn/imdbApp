@@ -32,7 +32,7 @@ class RemoteModule {
                 val originalHttpUrl = original.url()
                 val url = originalHttpUrl.newBuilder()
                     .addQueryParameter("api_key", RemoteContract.ACCESS_KEY_API_LAYER)
-                    .addQueryParameter("language", "th-TH")
+//                    .addQueryParameter("language", "th-TH")
                     .build()
 
                 val requestBuilder = original.newBuilder().url(url)

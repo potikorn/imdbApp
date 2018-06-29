@@ -62,10 +62,10 @@ class MainFragment : Fragment(), FilmAdapter.OnFilmClickListener {
         rv_movie_list.adapter = filmAdapter?.apply {
             setOnFilmClickListener(this@MainFragment)
         }
-        srl.setOnRefreshListener { filmViewModel.loadFilmList(etSearch?.text.toString()) }
+        srl.setOnRefreshListener { filmViewModel.loadNowPlayingList() }
         ivIconSearch.setOnClickListener {
             activity?.hideKeyboard()
-            filmViewModel.loadFilmList(etSearch?.text.toString())
+            filmViewModel.searchFilmList(etSearch?.text.toString())
         }
     }
 
@@ -79,7 +79,7 @@ class MainFragment : Fragment(), FilmAdapter.OnFilmClickListener {
             } ?: Log.e("MAINFRAGMENT", "Data is null")
 
         })
-        filmViewModel.loadFilmList("Pirate of the caribbean")
+        filmViewModel.loadNowPlayingList()
     }
 
     private fun processError(error: String?) =

@@ -10,4 +10,7 @@ interface MovieApi {
 
     @GET("search/movie")
     fun getMovieList(@Query("query") keyword: String): Single<Response<Film>>
+
+    @GET("movie/now_playing")
+    fun getMovieNowPlaying(): Single<Response<Film>>
 }
