@@ -1,58 +1,36 @@
 package com.example.potikorn.movielists.ui
 
-import android.arch.lifecycle.Lifecycle
-import android.arch.lifecycle.LifecycleObserver
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.OnLifecycleEvent
 import android.arch.lifecycle.ViewModel
-import android.util.Log
-import com.example.potikorn.movielists.ImdbApplication
-import com.example.potikorn.movielists.repository.FilmRepositoryImpl
-import com.example.potikorn.movielists.room.FilmEntity
-import io.reactivex.disposables.CompositeDisposable
+import com.example.potikorn.movielists.base.BaseSubscriber
+import com.example.potikorn.movielists.repository.FilmRepository
+import com.example.potikorn.movielists.room.Film
 import javax.inject.Inject
 
-class FilmViewModel : ViewModel(), LifecycleObserver {
+class FilmViewModel @Inject constructor(private val filmRepository: FilmRepository) :
+    ViewModel(), BaseSubscriber.SubscribeCallback<Film> {
 
-    @Inject
-    lateinit var filmRepositoryImpl: FilmRepositoryImpl
+    val isLoading = MutableLiveData<Boolean>()
+    val liveFilmData = MutableLiveData<Film>()
+    val error = MutableLiveData<String>()
 
-    private val compositeDisposable = CompositeDisposable()
-    private var liveFilmData: LiveData<MutableList<FilmEntity>>? = null
-
-    init {
-        initializeDagger()
+    fun loadFilmList(query: String){
+        isLoading.value = true
+        filmRepository.getFilmList(query, this)
     }
 
-    fun getFilmList(query: String): LiveData<MutableList<FilmEntity>> {
-        if (filmRepositoryImpl.getTotalFilms()) {
-            Log.e("BEST", "GET FROM API")
-            liveFilmData = MutableLiveData<MutableList<FilmEntity>>()
-            liveFilmData = filmRepositoryImpl.getFilmList(query)
-        } else {
-            Log.e("BEST", "GET FROM LOCAL DB")
-            liveFilmData = filmRepositoryImpl.getLocalFilmList()
-        }
-        return liveFilmData ?: MutableLiveData<MutableList<FilmEntity>>()
+    override fun onSuccess(body: Film?) {
+        isLoading.value = false
+        liveFilmData.value = body
     }
 
-    fun reloadData() {
-        Log.e("BEST", liveFilmData?.value.toString())
+    override fun onUnSuccess(message: String?) {
+        isLoading.value = false
+        error.value = message
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun unSubscribeViewModel() {
-        for (disposable in filmRepositoryImpl.allCompositeDisposable) {
-            compositeDisposable.addAll(disposable)
-        }
-        compositeDisposable.clear()
+    override fun onObservableError(message: String?) {
+        isLoading.value = false
+        error.value = message
     }
-
-    override fun onCleared() {
-        unSubscribeViewModel()
-        super.onCleared()
-    }
-
-    private fun initializeDagger() = ImdbApplication.appComponent.inject(this)
 }

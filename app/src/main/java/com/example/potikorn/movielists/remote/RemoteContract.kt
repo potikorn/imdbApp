@@ -22,14 +22,6 @@ class RemoteContract {
 
     const val BASE_API_LAYER = "https://api.themoviedb.org/3/"
 
-    const val ACCESS_KEY = "access_key"
-    const val CURRENCIES = "currencies"
-    const val FORMAT = "format"
-
-    const val SUCCESS = "success"
-    const val QUOTES = "quotes"
-
-    // I shouldn't expose the access key but it is to didactic use
     const val ACCESS_KEY_API_LAYER = "2987da0f3538bdb63ed97b29c1571587"
   }
 

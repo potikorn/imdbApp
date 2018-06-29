@@ -13,7 +13,7 @@ class Film {
     @SerializedName("total_pages")
     var totalPages: Int = 0
     @SerializedName("results")
-    var movieDetails: List<FilmEntity> = ArrayList()
+    var movieDetails: MutableList<FilmEntity> = ArrayList()
 }
 
 @Entity(tableName = RoomContract.TABLE_FILMS)
