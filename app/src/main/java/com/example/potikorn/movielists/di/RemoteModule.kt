@@ -1,13 +1,16 @@
 package com.example.potikorn.movielists.di
 
+import com.example.potikorn.movielists.BuildConfig
 import com.example.potikorn.movielists.httpmanager.MovieApi
 import com.example.potikorn.movielists.remote.RemoteContract
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.ihsanbal.logging.Level
+import com.ihsanbal.logging.LoggingInterceptor
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
+import okhttp3.internal.platform.Platform
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -27,20 +30,17 @@ class RemoteModule {
     @Singleton
     fun provideOkHttpClient(): OkHttpClient =
         OkHttpClient.Builder()
-            .addInterceptor { chain ->
-                val original = chain.request()
-                val originalHttpUrl = original.url()
-                val url = originalHttpUrl.newBuilder()
-                    .addQueryParameter("api_key", RemoteContract.ACCESS_KEY_API_LAYER)
-//                    .addQueryParameter("language", "th-TH")
+            .addInterceptor(
+                LoggingInterceptor.Builder()
+                    .loggable(BuildConfig.DEBUG)
+                    .setLevel(Level.BODY)
+                    .log(Platform.INFO)
+                    .request("Request")
+                    .response("Response")
+                    .addHeader("version", BuildConfig.VERSION_NAME)
+                    .addQueryParam("api_key", RemoteContract.ACCESS_KEY_API_LAYER)
                     .build()
-
-                val requestBuilder = original.newBuilder().url(url)
-                requestBuilder.method(original.method(), original.body())
-                val request = requestBuilder.build()
-                chain.proceed(request)
-            }
-            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+            )
             .build()
 
     @Provides
