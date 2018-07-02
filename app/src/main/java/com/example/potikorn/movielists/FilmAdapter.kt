@@ -1,5 +1,6 @@
 package com.example.potikorn.movielists
 
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -13,14 +14,16 @@ class FilmAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var films: MutableList<FilmEntity> = mutableListOf()
     private var onFilmClickListener: OnFilmClickListener? = null
+    private var onLoadMoreListener: OnLoadMoreListener? = null
+    private var loading: Boolean = false
 
     fun setOnFilmClickListener(onFilmClickListener: OnFilmClickListener) {
         this.onFilmClickListener = onFilmClickListener
     }
 
     fun setFilms(films: MutableList<FilmEntity>) {
-        this.films = films
-        notifyDataSetChanged()
+        this.films.addAll(this.films.size, films)
+        notifyItemRangeChanged(this.films.size.plus(1), this.films.size.plus(films.size))
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -30,10 +33,17 @@ class FilmAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as FilmHolder).onBindData(films[position])
+        when (holder) {
+            is FilmHolder -> holder.onBindData(films[position])
+            else -> (holder as LoadMoreViewHolder).onBindData()
+        }
     }
 
     override fun getItemCount(): Int = films.size
+
+//    override fun getItemViewType(position: Int): Int {
+//        return if (films[position] != null) VIEW_ITEM else VIEW_PROG
+//    }
 
     fun clearItems() {
         films.clear()
@@ -59,7 +69,36 @@ class FilmAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
+    inner class LoadMoreViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun onBindData() {
+        }
+    }
+
     interface OnFilmClickListener {
         fun onFilmClick(film: FilmEntity?)
+    }
+
+    interface OnLoadMoreListener {
+        fun onLoadMore()
+    }
+
+    fun setOnLoadMoreListener(recyclerView: RecyclerView, onLoadMoreListener: OnLoadMoreListener) {
+        this.onLoadMoreListener = onLoadMoreListener
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val totalItemCount = (recyclerView?.layoutManager as LinearLayoutManager).itemCount
+                val lastVisibleItem =
+                    (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+                if (!loading && totalItemCount <= (lastVisibleItem + 3)) {
+                    onLoadMoreListener.onLoadMore()
+                    loading = true
+                }
+            }
+        })
+    }
+
+    fun setLoaded() {
+        loading = false
     }
 }

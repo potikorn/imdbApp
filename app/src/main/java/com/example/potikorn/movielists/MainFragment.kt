@@ -1,11 +1,13 @@
 package com.example.potikorn.movielists
 
+import android.animation.Animator
 import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,18 +18,24 @@ import com.example.potikorn.movielists.room.Film
 import com.example.potikorn.movielists.room.FilmEntity
 import com.example.potikorn.movielists.ui.FilmViewModel
 import com.example.potikorn.movielists.ui.FilmViewModelFactory
+import com.willowtreeapps.spruce.Spruce
+import com.willowtreeapps.spruce.animation.DefaultAnimations
+import com.willowtreeapps.spruce.sort.DefaultSort
 import kotlinx.android.synthetic.main.fragment_movie_list.*
 import javax.inject.Inject
 
-class MainFragment : Fragment(), FilmAdapter.OnFilmClickListener {
+class MainFragment : Fragment(), FilmAdapter.OnFilmClickListener, FilmAdapter.OnLoadMoreListener {
 
     @Inject
     lateinit var filmViewModelFactory: FilmViewModelFactory
+
+    private var spruceAnimator: Animator? = null
 
     private val filmViewModel: FilmViewModel by lazy {
         ViewModelProviders.of(this, filmViewModelFactory).get(FilmViewModel::class.java)
     }
     private val filmAdapter: FilmAdapter? by lazy { FilmAdapter() }
+    private var isLoadMore = false
 
     companion object {
         fun newInstance(): MainFragment {
@@ -58,11 +66,23 @@ class MainFragment : Fragment(), FilmAdapter.OnFilmClickListener {
     }
 
     private fun initInstance() {
-        rv_movie_list.layoutManager = LinearLayoutManager(context)
+        rv_movie_list.layoutManager = object : LinearLayoutManager(context) {
+            override fun onLayoutChildren(
+                recycler: RecyclerView.Recycler?,
+                state: RecyclerView.State?
+            ) {
+                super.onLayoutChildren(recycler, state)
+//                initSpruce()
+            }
+        }
         rv_movie_list.adapter = filmAdapter?.apply {
             setOnFilmClickListener(this@MainFragment)
+            setOnLoadMoreListener(rv_movie_list, this@MainFragment)
         }
-        srl.setOnRefreshListener { filmViewModel.loadNowPlayingList() }
+        srl.setOnRefreshListener {
+            isLoadMore = true
+            filmViewModel.loadNowPlayingList(true)
+        }
         ivIconSearch.setOnClickListener {
             activity?.hideKeyboard()
             filmViewModel.searchFilmList(etSearch?.text.toString())
@@ -73,11 +93,17 @@ class MainFragment : Fragment(), FilmAdapter.OnFilmClickListener {
         filmViewModel.isLoading.observe(this, Observer { srl.isRefreshing = it ?: false })
         filmViewModel.error.observe(this, Observer { processError(it) })
         filmViewModel.liveFilmData.observe(this, Observer<Film> { filmModels ->
+            filmAdapter?.setLoaded()
             filmModels?.let {
-                rv_movie_list.scrollToPosition(0)
+                when (isLoadMore) {
+                    true -> {
+                        filmAdapter?.clearItems()
+                        rv_movie_list.scrollToPosition(0)
+                        isLoadMore = false
+                    }
+                }
                 filmAdapter?.setFilms(filmModels.movieDetails)
             } ?: Log.e("MAINFRAGMENT", "Data is null")
-
         })
         filmViewModel.loadNowPlayingList()
     }
@@ -96,5 +122,17 @@ class MainFragment : Fragment(), FilmAdapter.OnFilmClickListener {
 
     override fun onFilmClick(film: FilmEntity?) {
         Toast.makeText(context, "${film?.id} : ${film?.title}", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun initSpruce() {
+        spruceAnimator = Spruce.SpruceBuilder(rv_movie_list)
+            .sortWith(DefaultSort(100))
+            .animateWith(DefaultAnimations.shrinkAnimator(rv_movie_list, 1000))
+            .start()
+    }
+
+    override fun onLoadMore() {
+        Log.e("Best", "ENTER LOAD MORE")
+        filmViewModel.loadNowPlayingList()
     }
 }

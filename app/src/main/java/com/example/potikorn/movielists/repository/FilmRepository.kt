@@ -18,10 +18,15 @@ class FilmRepository @Inject constructor(private val remoteFilmDataSource: Remot
             .subscribe(BaseSubscriber(callback))
     }
 
-    fun getNowPlayingList(callback: BaseSubscriber.SubscribeCallback<Film>) {
-        remoteFilmDataSource.requestNowPlayingList()
+    fun getNowPlayingList(page: Int, callback: BaseSubscriber.SubscribeCallback<Film>) {
+        remoteFilmDataSource.requestNowPlayingList(page)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(BaseSubscriber(callback))
+    }
+
+    fun funFunc(callback: BaseSubscriber.SubscribeCallback<Film>) {
+        val searchList = remoteFilmDataSource.requestFilmList("X-men").toObservable()
+        val nowPlaying = remoteFilmDataSource.requestNowPlayingList(page = 1).toObservable()
     }
 }

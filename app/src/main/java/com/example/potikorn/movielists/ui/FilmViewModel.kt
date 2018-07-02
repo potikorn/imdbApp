@@ -14,17 +14,23 @@ class FilmViewModel @Inject constructor(private val filmRepository: FilmReposito
     val liveFilmData = MutableLiveData<Film>()
     val error = MutableLiveData<String>()
 
+    private var page: Int? = null
+
     fun searchFilmList(query: String) {
         isLoading.value = true
         filmRepository.getFilmList(query, this)
     }
 
-    fun loadNowPlayingList() {
+    fun loadNowPlayingList(isLoadMore: Boolean = false) {
+        if (isLoadMore) {
+            page = 1
+        }
         isLoading.value = true
-        filmRepository.getNowPlayingList(this)
+        filmRepository.getNowPlayingList(page ?: 1, this)
     }
 
     override fun onSuccess(body: Film?) {
+        page = body?.page?.plus(1)
         isLoading.value = false
         liveFilmData.value = body
     }

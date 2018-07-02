@@ -12,5 +12,5 @@ interface MovieApi {
     fun getMovieList(@Query("query") keyword: String): Single<Response<Film>>
 
     @GET("movie/now_playing")
-    fun getMovieNowPlaying(): Single<Response<Film>>
+    fun getMovieNowPlaying(@Query("page") page: Int? = 1): Single<Response<Film>>
 }
