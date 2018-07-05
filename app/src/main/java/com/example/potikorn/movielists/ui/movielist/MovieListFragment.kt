@@ -1,7 +1,6 @@
-package com.example.potikorn.movielists
+package com.example.potikorn.movielists.ui.movielist
 
 import android.animation.Animator
-import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -12,19 +11,18 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import com.example.potikorn.movielists.ImdbApplication
+import com.example.potikorn.movielists.R
 import com.example.potikorn.movielists.room.Film
 import com.example.potikorn.movielists.room.FilmEntity
-import com.example.potikorn.movielists.ui.FilmViewModel
-import com.example.potikorn.movielists.ui.FilmViewModelFactory
 import com.willowtreeapps.spruce.Spruce
 import com.willowtreeapps.spruce.animation.DefaultAnimations
 import com.willowtreeapps.spruce.sort.DefaultSort
 import kotlinx.android.synthetic.main.fragment_movie_list.*
 import javax.inject.Inject
 
-class MainFragment : Fragment(), FilmAdapter.OnFilmClickListener, FilmAdapter.OnLoadMoreListener {
+class MovieListFragment : Fragment(), FilmAdapter.OnFilmClickListener, FilmAdapter.OnLoadMoreListener {
 
     @Inject
     lateinit var filmViewModelFactory: FilmViewModelFactory
@@ -35,11 +33,11 @@ class MainFragment : Fragment(), FilmAdapter.OnFilmClickListener, FilmAdapter.On
         ViewModelProviders.of(this, filmViewModelFactory).get(FilmViewModel::class.java)
     }
     private val filmAdapter: FilmAdapter? by lazy { FilmAdapter() }
-    private var isLoadMore = false
+    private var isRefresh = false
 
     companion object {
-        fun newInstance(): MainFragment {
-            val mainFragment = MainFragment()
+        fun newInstance(): MovieListFragment {
+            val mainFragment = MovieListFragment()
             val args = Bundle()
             mainFragment.arguments = args
             return mainFragment
@@ -76,16 +74,12 @@ class MainFragment : Fragment(), FilmAdapter.OnFilmClickListener, FilmAdapter.On
             }
         }
         rv_movie_list.adapter = filmAdapter?.apply {
-            setOnFilmClickListener(this@MainFragment)
-            setOnLoadMoreListener(rv_movie_list, this@MainFragment)
+            setOnFilmClickListener(this@MovieListFragment)
+            setOnLoadMoreListener(rv_movie_list, this@MovieListFragment)
         }
         srl.setOnRefreshListener {
-            isLoadMore = true
+            isRefresh = true
             filmViewModel.loadNowPlayingList(true)
-        }
-        ivIconSearch.setOnClickListener {
-            activity?.hideKeyboard()
-            filmViewModel.searchFilmList(etSearch?.text.toString())
         }
     }
 
@@ -95,11 +89,11 @@ class MainFragment : Fragment(), FilmAdapter.OnFilmClickListener, FilmAdapter.On
         filmViewModel.liveFilmData.observe(this, Observer<Film> { filmModels ->
             filmAdapter?.setLoaded()
             filmModels?.let {
-                when (isLoadMore) {
+                when (isRefresh) {
                     true -> {
                         filmAdapter?.clearItems()
                         rv_movie_list.scrollToPosition(0)
-                        isLoadMore = false
+                        isRefresh = false
                     }
                 }
                 filmAdapter?.setFilms(filmModels.movieDetails)
@@ -110,15 +104,6 @@ class MainFragment : Fragment(), FilmAdapter.OnFilmClickListener, FilmAdapter.On
 
     private fun processError(error: String?) =
         Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-
-    private fun Activity.hideKeyboard() {
-        val imm = this.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        var view = this.currentFocus
-        if (view == null) {
-            view = View(this)
-        }
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
-    }
 
     override fun onFilmClick(film: FilmEntity?) {
         Toast.makeText(context, "${film?.id} : ${film?.title}", Toast.LENGTH_SHORT).show()

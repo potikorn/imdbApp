@@ -1,4 +1,4 @@
-package com.example.potikorn.movielists
+package com.example.potikorn.movielists.ui.movielist
 
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.example.potikorn.movielists.R
 import com.example.potikorn.movielists.room.FilmEntity
 import kotlinx.android.synthetic.main.list_movie_item.view.*
 

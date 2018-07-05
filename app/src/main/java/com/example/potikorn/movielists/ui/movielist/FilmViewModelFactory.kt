@@ -1,4 +1,4 @@
-package com.example.potikorn.movielists.ui
+package com.example.potikorn.movielists.ui.movielist
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider

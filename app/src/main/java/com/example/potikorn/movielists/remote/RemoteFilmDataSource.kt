@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class RemoteFilmDataSource @Inject constructor(private val remoteFilmService: MovieApi) {
 
-    fun requestFilmList(queryWord: String) = remoteFilmService.getMovieList(queryWord)
+    fun requestFilmList(queryWord: String, page: Int) = remoteFilmService.getMovieList(queryWord, page)
 
     fun requestNowPlayingList(page: Int)= remoteFilmService.getMovieNowPlaying(page)
 }
