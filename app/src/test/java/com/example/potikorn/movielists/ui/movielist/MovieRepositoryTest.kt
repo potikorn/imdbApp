@@ -5,7 +5,7 @@ import com.example.potikorn.movielists.RxSchedulersOverrideRule
 import com.example.potikorn.movielists.base.BaseSubscriber
 import com.example.potikorn.movielists.httpmanager.MovieApi
 import com.example.potikorn.movielists.remote.RemoteFilmDataSource
-import com.example.potikorn.movielists.repository.FilmRepository
+import com.example.potikorn.movielists.repository.MovieRepository
 import com.example.potikorn.movielists.room.Film
 import io.reactivex.Single
 import okhttp3.MediaType
@@ -20,7 +20,7 @@ import org.powermock.modules.junit4.PowerMockRunner
 import retrofit2.Response
 
 @RunWith(PowerMockRunner::class)
-class FilmRepositoryTest {
+class MovieRepositoryTest {
 
     @Rule
     @JvmField
@@ -35,14 +35,14 @@ class FilmRepositoryTest {
     private var jsonUtil = JsonMockUtility()
     private val remoteFilmDataSource: RemoteFilmDataSource
     private val spy: RemoteFilmDataSource
-    private val repository: FilmRepository
+    private val repository: MovieRepository
     private var responseBody: ResponseBody = ResponseBody.create(MediaType.parse("application/json"), "")
 
     init {
         MockitoAnnotations.initMocks(this)
         remoteFilmDataSource = RemoteFilmDataSource(movieApi)
         spy = remoteFilmDataSource
-        repository = FilmRepository(remoteFilmDataSource)
+        repository = MovieRepository(remoteFilmDataSource)
     }
 
     @Test

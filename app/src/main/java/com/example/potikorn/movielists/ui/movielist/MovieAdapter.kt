@@ -11,9 +11,12 @@ import com.example.potikorn.movielists.R
 import com.example.potikorn.movielists.room.FilmEntity
 import kotlinx.android.synthetic.main.list_movie_item.view.*
 
-class FilmAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MovieAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var films: MutableList<FilmEntity> = mutableListOf()
+    val VIEW_ITEM = 0
+    val VIEW_PROGRESS = 1
+
+    private var films: MutableList<FilmEntity?> = mutableListOf()
     private var onFilmClickListener: OnFilmClickListener? = null
     private var onLoadMoreListener: OnLoadMoreListener? = null
     private var loading: Boolean = false
@@ -27,10 +30,29 @@ class FilmAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         notifyItemRangeChanged(this.films.size.plus(1), this.films.size.plus(films.size))
     }
 
+    fun setLoadMore(film: FilmEntity?) {
+        this.films.add(this.films.size.plus(1), film)
+        notifyItemChanged(this.films.size)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.list_movie_item, parent, false)
-        return FilmHolder(view)
+        val inflater = LayoutInflater.from(parent.context)
+        when (viewType) {
+            VIEW_ITEM -> return FilmHolder(
+                inflater.inflate(
+                    R.layout.list_movie_item,
+                    parent,
+                    false
+                )
+            )
+            else -> return LoadMoreViewHolder(
+                inflater.inflate(
+                    R.layout.item_progress,
+                    parent,
+                    false
+                )
+            )
+        }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -42,9 +64,9 @@ class FilmAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemCount(): Int = films.size
 
-//    override fun getItemViewType(position: Int): Int {
-//        return if (films[position] != null) VIEW_ITEM else VIEW_PROG
-//    }
+    override fun getItemViewType(position: Int): Int {
+        return if (films[position] != null) VIEW_ITEM else VIEW_PROGRESS
+    }
 
     fun clearItems() {
         films.clear()
@@ -53,12 +75,12 @@ class FilmAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class FilmHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val BASE_IMAGE_URL = "https://image.tmdb.org/t/p/w500"
-        fun onBindData(film: FilmEntity) {
-            itemView.tv_title.text = film.title
+        fun onBindData(film: FilmEntity?) {
+            itemView.tv_title.text = film?.title
             itemView.tv_published_year.text =
-                String.format("%.1f/10  :  %s", film.voteAverage, film.releaseDate)
-            itemView.tv_overview.text = film.overview
-            val imageUrl = BASE_IMAGE_URL + film.posterPath
+                String.format("%.1f/10  :  %s", film?.voteAverage, film?.releaseDate)
+            itemView.tv_overview.text = film?.overview
+            val imageUrl = BASE_IMAGE_URL + film?.posterPath
             Glide.with(itemView.context)
                 .load(imageUrl)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)

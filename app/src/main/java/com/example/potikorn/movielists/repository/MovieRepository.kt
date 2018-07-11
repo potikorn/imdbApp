@@ -3,13 +3,14 @@ package com.example.potikorn.movielists.repository
 import com.example.potikorn.movielists.base.BaseSubscriber
 import com.example.potikorn.movielists.remote.RemoteFilmDataSource
 import com.example.potikorn.movielists.room.Film
+import com.example.potikorn.movielists.room.FilmEntity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class FilmRepository @Inject constructor(private val remoteFilmDataSource: RemoteFilmDataSource) {
+class MovieRepository @Inject constructor(private val remoteFilmDataSource: RemoteFilmDataSource) {
 
     fun getFilmList(query: String, page: Int, callback: BaseSubscriber.SubscribeCallback<Film>) {
         remoteFilmDataSource.requestFilmList(query, page)
@@ -23,6 +24,18 @@ class FilmRepository @Inject constructor(private val remoteFilmDataSource: Remot
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(BaseSubscriber(callback))
+    }
+
+    fun getFilmDetail(movieId: Long, callback: MovieContract.FilmDetailListener) {
+        remoteFilmDataSource.requestFilmDetail(movieId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(BaseSubscriber(object : BaseSubscriber.SubscribeCallback<FilmEntity> {
+                override fun onSuccess(body: FilmEntity?) = callback.onFilmDetailLoadSuccess(body)
+                override fun onUnSuccess(message: String?) = callback.onUnSuccess(message)
+                override fun onObservableError(message: String?) =
+                    callback.onObservableError(message)
+            }))
     }
 
     fun funFunc(callback: BaseSubscriber.SubscribeCallback<Film>) {
