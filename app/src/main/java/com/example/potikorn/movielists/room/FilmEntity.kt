@@ -3,7 +3,7 @@ package com.example.potikorn.movielists.room
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
-import com.example.potikorn.movielists.room.dao.GenresDAO
+import com.example.potikorn.movielists.room.dao.GenreDAO
 import com.google.gson.annotations.SerializedName
 
 class Film {
@@ -27,7 +27,7 @@ data class FilmEntity(
     @SerializedName("release_date") var releaseDate: String? = null,
     @SerializedName("backdrop_path") var backDropPath: String? = null,
     @SerializedName("popularity") var popularity: Double? = null,
-    @Ignore @SerializedName("genres") var genresDAO: MutableList<GenresDAO>? = null
+    @Ignore @SerializedName("genres") var genreDAO: MutableList<GenreDAO>? = null
 ) {
     constructor() : this(null, null, null, null, null, null, null, null, null)
 }

@@ -7,11 +7,12 @@ import com.example.potikorn.movielists.extensions.inflate
 import com.example.potikorn.movielists.room.FilmEntity
 import com.example.potikorn.movielists.ui.moviedetail.viewholder.DetailViewHolder
 import com.example.potikorn.movielists.ui.moviedetail.viewholder.PosterViewHolder
+import com.example.potikorn.movielists.ui.moviedetail.viewholder.genres.GenresViewHolder
 
 class MovieDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var film: FilmEntity? = null
-    private val ITEM_TYPES = 2
+    private val ITEM_TYPES = 3
     private val POSTER_TYPE = 0
     private val DETAIL_TYPE = 1
     private val GENRES_TYPE = 2
@@ -19,13 +20,15 @@ class MovieDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
         when (viewType) {
             POSTER_TYPE -> PosterViewHolder(parent.inflate(R.layout.item_poster_movie_detail))
-            else -> DetailViewHolder(parent.inflate(R.layout.item_movie_detail))
+            DETAIL_TYPE -> DetailViewHolder(parent.inflate(R.layout.item_movie_detail))
+            else -> GenresViewHolder(parent.inflate(R.layout.item_genres_view_group))
         }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is PosterViewHolder -> holder.onBindData(film)
-            else -> (holder as? DetailViewHolder)?.onBindData(film)
+            is DetailViewHolder -> holder.onBindData(film)
+            else -> (holder as? GenresViewHolder)?.onBindData(film)
         }
     }
 

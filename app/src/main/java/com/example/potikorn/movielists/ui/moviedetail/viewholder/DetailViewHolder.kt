@@ -6,6 +6,7 @@ import com.example.potikorn.movielists.room.FilmEntity
 import kotlinx.android.synthetic.main.item_movie_detail.view.*
 
 class DetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
     fun onBindData(film: FilmEntity?) {
         itemView.pbPopularity.progress = film?.popularity?.toInt() ?: 0
         itemView.tvUserScore.text = film?.popularity?.toInt().toString()
