@@ -7,14 +7,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import com.example.potikorn.movielists.ImdbApplication
 import com.example.potikorn.movielists.R
+import com.example.potikorn.movielists.extensions.hideKeyboard
 import com.example.potikorn.movielists.extensions.showToast
 import com.example.potikorn.movielists.room.Film
 import com.example.potikorn.movielists.room.FilmEntity
@@ -37,6 +37,8 @@ class SearchFragment : Fragment(), MovieAdapter.OnFilmClickListener,
         ViewModelProviders.of(this, movieViewModelFactory).get(MovieViewModel::class.java)
     }
     private val movieAdapter: MovieAdapter? by lazy { MovieAdapter() }
+
+    private var isRefresh = false
 
     companion object {
         fun newInstance(): SearchFragment {
@@ -74,14 +76,17 @@ class SearchFragment : Fragment(), MovieAdapter.OnFilmClickListener,
                 setOnLoadMoreListener(rv_movie_list, this@SearchFragment)
             }
         }
-        etSearch.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                movieViewModel.searchFilmList(true, s.toString())
+        ivIconSearch.setOnClickListener {
+            activity?.hideKeyboard()
+            isRefresh = true
+            movieViewModel.searchFilmList(true, etSearch.text.toString())
+        }
+        etSearch.setOnEditorActionListener { _, actionId, _ ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_DONE -> ivIconSearch.performClick()
             }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+            return@setOnEditorActionListener false
+        }
     }
 
     private fun initViewModel() {
@@ -90,8 +95,14 @@ class SearchFragment : Fragment(), MovieAdapter.OnFilmClickListener,
         movieViewModel.liveFilmListData.observe(this, Observer<Film> { filmModels ->
             movieAdapter?.setLoaded()
             filmModels?.let {
-                movieAdapter?.clearItems()
-                movieAdapter?.setFilms(filmModels.movieDetails ?: arrayListOf())
+                when (isRefresh) {
+                    true -> {
+                        movieAdapter?.clearItems()
+                        rv_movie_list.scrollToPosition(0)
+                        isRefresh = false
+                    }
+                }
+                movieAdapter?.setFilms(filmModels.movieDetails ?: mutableListOf())
             } ?: Log.e("MAINFRAGMENT", "Data is null")
         })
     }

@@ -22,5 +22,7 @@ data class FilmEntity(
     @SerializedName("vote_average") var voteAverage: Double? = null,
     @SerializedName("poster_path") var posterPath: String? = null,
     @SerializedName("overview") var overview: String? = null,
-    @SerializedName("release_date") var releaseDate: String? = null
+    @SerializedName("release_date") var releaseDate: String? = null,
+    @SerializedName("backdrop_path") var backDropPath: String? = null,
+    @SerializedName("popularity") var popularity: Double? = null
 )
