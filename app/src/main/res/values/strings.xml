@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Movie Lists</string>
     <string name="title_overview">Overview</string>
+    <string name="user_score">User\nscore</string>
 </resources>

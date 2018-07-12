@@ -14,6 +14,7 @@ class MovieDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val ITEM_TYPES = 2
     private val POSTER_TYPE = 0
     private val DETAIL_TYPE = 1
+    private val GENRES_TYPE = 2
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
         when (viewType) {
@@ -33,7 +34,8 @@ class MovieDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun getItemViewType(position: Int): Int =
         when (position) {
             0 -> POSTER_TYPE
-            else -> DETAIL_TYPE
+            1 -> DETAIL_TYPE
+            else -> GENRES_TYPE
         }
 
     fun setItem(film: FilmEntity?) {
