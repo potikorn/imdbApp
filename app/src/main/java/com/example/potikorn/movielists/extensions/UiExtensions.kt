@@ -53,3 +53,10 @@ fun View.getBitmapFromView(view: View): Bitmap {
     view.draw(c)
     return bitmap
 }
+
+fun View.isSelectStated() {
+    when (this.isSelected) {
+        true -> this.isSelected = false
+        else -> this.isSelected = true
+    }
+}

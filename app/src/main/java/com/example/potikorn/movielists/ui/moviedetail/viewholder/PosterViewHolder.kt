@@ -11,6 +11,7 @@ import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
 import com.example.potikorn.movielists.BASE_IMAGE_PATH
 import com.example.potikorn.movielists.dao.FilmResult
+import com.example.potikorn.movielists.extensions.isSelectStated
 import com.example.potikorn.movielists.extensions.loadImageView
 import com.example.potikorn.movielists.widget.BlurProcessor
 import kotlinx.android.synthetic.main.item_poster_movie_detail.view.*
@@ -35,5 +36,8 @@ class PosterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
                     }
                 }
             })
+        itemView.ivIconFavorite.setOnClickListener { it.isSelectStated() }
+        itemView.ivIconWishList.setOnClickListener { it.isSelectStated() }
+        itemView.ivIconRate.setOnClickListener { it.isSelectStated() }
     }
 }

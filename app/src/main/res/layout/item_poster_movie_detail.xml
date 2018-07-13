@@ -7,19 +7,60 @@
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/ivBackDrop"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="350dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:color/darker_gray" />
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/ivPoster"
         android:layout_width="150dp"
         android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
         android:background="@android:color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/ivBackDrop"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="H,1:1.5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="horizontal"
+        android:background="@drawable/menu_background_tranparency"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="@id/ivBackDrop"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivPoster">
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/ivIconFavorite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/selector_favorite" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/ivIconWishList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            app:srcCompat="@drawable/selector_bookmark" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/ivIconRate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            app:srcCompat="@drawable/selector_rate" />
+
+    </LinearLayout>
+
 </android.support.constraint.ConstraintLayout>
