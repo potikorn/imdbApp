@@ -3,37 +3,42 @@ package com.example.potikorn.movielists.ui.search
 import android.animation.Animator
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.view.inputmethod.EditorInfo
 import com.example.potikorn.movielists.ImdbApplication
 import com.example.potikorn.movielists.R
-import com.example.potikorn.movielists.room.Film
-import com.example.potikorn.movielists.room.FilmEntity
-import com.example.potikorn.movielists.ui.movielist.FilmAdapter
-import com.example.potikorn.movielists.ui.movielist.FilmViewModel
-import com.example.potikorn.movielists.ui.movielist.FilmViewModelFactory
+import com.example.potikorn.movielists.dao.Film
+import com.example.potikorn.movielists.dao.FilmResult
+import com.example.potikorn.movielists.extensions.hideKeyboard
+import com.example.potikorn.movielists.extensions.showToast
+import com.example.potikorn.movielists.ui.moviedetail.MovieDetailActivity
+import com.example.potikorn.movielists.ui.movielist.MovieAdapter
+import com.example.potikorn.movielists.ui.movielist.MovieViewModel
+import com.example.potikorn.movielists.ui.movielist.MovieViewModelFactory
 import kotlinx.android.synthetic.main.fragment_search.*
 import javax.inject.Inject
 
-class SearchFragment : Fragment(), FilmAdapter.OnFilmClickListener, FilmAdapter.OnLoadMoreListener {
+class SearchFragment : Fragment(), MovieAdapter.OnFilmClickListener,
+    MovieAdapter.OnLoadMoreListener {
 
     @Inject
-    lateinit var filmViewModelFactory: FilmViewModelFactory
+    lateinit var movieViewModelFactory: MovieViewModelFactory
 
     private var spruceAnimator: Animator? = null
 
-    private val filmViewModel: FilmViewModel by lazy {
-        ViewModelProviders.of(this, filmViewModelFactory).get(FilmViewModel::class.java)
+    private val movieViewModel: MovieViewModel by lazy {
+        ViewModelProviders.of(this, movieViewModelFactory).get(MovieViewModel::class.java)
     }
-    private val filmAdapter: FilmAdapter? by lazy { FilmAdapter() }
+    private val movieAdapter: MovieAdapter? by lazy { MovieAdapter() }
+
+    private var isRefresh = false
 
     companion object {
         fun newInstance(): SearchFragment {
@@ -66,42 +71,53 @@ class SearchFragment : Fragment(), FilmAdapter.OnFilmClickListener, FilmAdapter.
     private fun initInstance() {
         rv_movie_list.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = filmAdapter?.apply {
+            adapter = movieAdapter?.apply {
                 setOnFilmClickListener(this@SearchFragment)
                 setOnLoadMoreListener(rv_movie_list, this@SearchFragment)
             }
         }
-        etSearch.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                filmViewModel.searchFilmList(true, s.toString())
+        ivIconSearch.setOnClickListener {
+            activity?.hideKeyboard()
+            isRefresh = true
+            movieViewModel.searchFilmList(true, etSearch.text.toString())
+        }
+        etSearch.setOnEditorActionListener { _, actionId, _ ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_DONE -> ivIconSearch.performClick()
             }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+            return@setOnEditorActionListener false
+        }
     }
 
     private fun initViewModel() {
-        filmViewModel.isLoading.observe(this, Observer { srl.isRefreshing = it ?: false })
-        filmViewModel.error.observe(this, Observer { processError(it) })
-        filmViewModel.liveFilmData.observe(this, Observer<Film> { filmModels ->
-            filmAdapter?.setLoaded()
+        movieViewModel.isLoading.observe(this, Observer { srl.isRefreshing = it ?: false })
+        movieViewModel.error.observe(this, Observer { processError(it) })
+        movieViewModel.liveFilmListData.observe(this, Observer<Film> { filmModels ->
+            movieAdapter?.setLoaded()
             filmModels?.let {
-                filmAdapter?.clearItems()
-                filmAdapter?.setFilms(filmModels.movieDetails)
+                when (isRefresh) {
+                    true -> {
+                        movieAdapter?.clearItems()
+                        rv_movie_list.scrollToPosition(0)
+                        isRefresh = false
+                    }
+                }
+                movieAdapter?.setFilms(filmModels.movieDetails ?: mutableListOf())
             } ?: Log.e("MAINFRAGMENT", "Data is null")
         })
     }
 
-    private fun processError(error: String?) =
-        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+    private fun processError(error: String?) = activity?.showToast(error)
 
-    override fun onFilmClick(film: FilmEntity?) {
-        Toast.makeText(context, "${film?.id} : ${film?.title}", Toast.LENGTH_SHORT).show()
+    override fun onFilmClick(film: FilmResult?) {
+        startActivity(
+            Intent(context, MovieDetailActivity::class.java)
+                .putExtra(MovieDetailActivity.EXTRA_FILM_ID, film?.id)
+        )
     }
 
     override fun onLoadMore() {
         Log.e("Best", "ENTER LOAD MORE")
-        filmViewModel.searchFilmList(query = etSearch?.text.toString())
+        movieViewModel.searchFilmList(query = etSearch?.text.toString())
     }
 }
