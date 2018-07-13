@@ -2,6 +2,7 @@ package com.example.potikorn.movielists.di
 
 import com.example.potikorn.movielists.BuildConfig
 import com.example.potikorn.movielists.httpmanager.MovieApi
+import com.example.potikorn.movielists.httpmanager.UserApi
 import com.example.potikorn.movielists.remote.RemoteContract
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -57,4 +58,9 @@ class RemoteModule {
     @Singleton
     fun provideRemoteMovieService(retrofit: Retrofit): MovieApi =
         retrofit.create(MovieApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideRemoteUserService(retrofit: Retrofit): UserApi =
+        retrofit.create(UserApi::class.java)
 }
