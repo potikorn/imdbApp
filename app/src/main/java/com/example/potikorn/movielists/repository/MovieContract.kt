@@ -1,11 +1,11 @@
 package com.example.potikorn.movielists.repository
 
-import com.example.potikorn.movielists.room.FilmEntity
+import com.example.potikorn.movielists.dao.FilmResult
 
 class MovieContract {
 
     interface FilmDetailListener {
-        fun onFilmDetailLoadSuccess(film: FilmEntity?)
+        fun onFilmDetailLoadSuccess(film: FilmResult?)
         fun onUnSuccess(message: String?)
         fun onObservableError(message: String?)
     }

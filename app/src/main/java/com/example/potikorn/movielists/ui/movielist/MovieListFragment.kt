@@ -14,9 +14,9 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.potikorn.movielists.ImdbApplication
 import com.example.potikorn.movielists.R
+import com.example.potikorn.movielists.dao.Film
+import com.example.potikorn.movielists.dao.FilmResult
 import com.example.potikorn.movielists.extensions.showToast
-import com.example.potikorn.movielists.room.Film
-import com.example.potikorn.movielists.room.FilmEntity
 import com.example.potikorn.movielists.ui.moviedetail.MovieDetailActivity
 import com.example.potikorn.movielists.ui.moviedetail.MovieDetailActivity.Companion.EXTRA_FILM_ID
 import com.willowtreeapps.spruce.Spruce
@@ -108,7 +108,7 @@ class MovieListFragment : Fragment(), MovieAdapter.OnFilmClickListener,
 
     private fun processError(error: String?) = activity?.showToast(error)
 
-    override fun onFilmClick(film: FilmEntity?) {
+    override fun onFilmClick(film: FilmResult?) {
         startActivity(
             Intent(context, MovieDetailActivity::class.java)
                 .putExtra(EXTRA_FILM_ID, film?.id)

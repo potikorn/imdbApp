@@ -10,13 +10,13 @@ import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
 import com.example.potikorn.movielists.BASE_IMAGE_PATH
+import com.example.potikorn.movielists.dao.FilmResult
 import com.example.potikorn.movielists.extensions.loadImageView
-import com.example.potikorn.movielists.room.FilmEntity
 import com.example.potikorn.movielists.widget.BlurProcessor
 import kotlinx.android.synthetic.main.item_poster_movie_detail.view.*
 
 class PosterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    fun onBindData(film: FilmEntity?) {
+    fun onBindData(film: FilmResult?) {
         itemView.ivPoster.loadImageView("$BASE_IMAGE_PATH${film?.posterPath}")
         Glide.with(itemView.context)
             .load("$BASE_IMAGE_PATH${film?.posterPath}")

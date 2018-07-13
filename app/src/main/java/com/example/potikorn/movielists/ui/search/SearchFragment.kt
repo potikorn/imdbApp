@@ -14,10 +14,10 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import com.example.potikorn.movielists.ImdbApplication
 import com.example.potikorn.movielists.R
+import com.example.potikorn.movielists.dao.Film
+import com.example.potikorn.movielists.dao.FilmResult
 import com.example.potikorn.movielists.extensions.hideKeyboard
 import com.example.potikorn.movielists.extensions.showToast
-import com.example.potikorn.movielists.room.Film
-import com.example.potikorn.movielists.room.FilmEntity
 import com.example.potikorn.movielists.ui.moviedetail.MovieDetailActivity
 import com.example.potikorn.movielists.ui.movielist.MovieAdapter
 import com.example.potikorn.movielists.ui.movielist.MovieViewModel
@@ -109,7 +109,7 @@ class SearchFragment : Fragment(), MovieAdapter.OnFilmClickListener,
 
     private fun processError(error: String?) = activity?.showToast(error)
 
-    override fun onFilmClick(film: FilmEntity?) {
+    override fun onFilmClick(film: FilmResult?) {
         startActivity(
             Intent(context, MovieDetailActivity::class.java)
                 .putExtra(MovieDetailActivity.EXTRA_FILM_ID, film?.id)

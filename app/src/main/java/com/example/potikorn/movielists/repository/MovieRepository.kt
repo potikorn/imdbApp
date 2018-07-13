@@ -1,9 +1,9 @@
 package com.example.potikorn.movielists.repository
 
 import com.example.potikorn.movielists.base.BaseSubscriber
+import com.example.potikorn.movielists.dao.Film
+import com.example.potikorn.movielists.dao.FilmResult
 import com.example.potikorn.movielists.remote.RemoteFilmDataSource
-import com.example.potikorn.movielists.room.Film
-import com.example.potikorn.movielists.room.FilmEntity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
@@ -30,8 +30,8 @@ class MovieRepository @Inject constructor(private val remoteFilmDataSource: Remo
         remoteFilmDataSource.requestFilmDetail(movieId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(BaseSubscriber(object : BaseSubscriber.SubscribeCallback<FilmEntity> {
-                override fun onSuccess(body: FilmEntity?) = callback.onFilmDetailLoadSuccess(body)
+            .subscribe(BaseSubscriber(object : BaseSubscriber.SubscribeCallback<FilmResult> {
+                override fun onSuccess(body: FilmResult?) = callback.onFilmDetailLoadSuccess(body)
                 override fun onUnSuccess(message: String?) = callback.onUnSuccess(message)
                 override fun onObservableError(message: String?) =
                     callback.onObservableError(message)

@@ -3,15 +3,15 @@ package com.example.potikorn.movielists.ui.moviedetail
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.example.potikorn.movielists.R
+import com.example.potikorn.movielists.dao.FilmResult
 import com.example.potikorn.movielists.extensions.inflate
-import com.example.potikorn.movielists.room.FilmEntity
 import com.example.potikorn.movielists.ui.moviedetail.viewholder.DetailViewHolder
 import com.example.potikorn.movielists.ui.moviedetail.viewholder.PosterViewHolder
 import com.example.potikorn.movielists.ui.moviedetail.viewholder.genres.GenresViewHolder
 
 class MovieDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    var film: FilmEntity? = null
+    var film: FilmResult? = null
     private val ITEM_TYPES = 3
     private val POSTER_TYPE = 0
     private val DETAIL_TYPE = 1
@@ -41,7 +41,7 @@ class MovieDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             else -> GENRES_TYPE
         }
 
-    fun setItem(film: FilmEntity?) {
+    fun setItem(film: FilmResult?) {
         this.film = film
         notifyDataSetChanged()
     }

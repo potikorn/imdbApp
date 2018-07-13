@@ -7,8 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.example.potikorn.movielists.BASE_IMAGE_PATH
 import com.example.potikorn.movielists.R
-import com.example.potikorn.movielists.room.FilmEntity
+import com.example.potikorn.movielists.dao.FilmResult
 import kotlinx.android.synthetic.main.list_movie_item.view.*
 
 class MovieAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -16,7 +17,7 @@ class MovieAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     val VIEW_ITEM = 0
     val VIEW_PROGRESS = 1
 
-    private var films: MutableList<FilmEntity?> = mutableListOf()
+    private var films: MutableList<FilmResult?> = mutableListOf()
     private var onFilmClickListener: OnFilmClickListener? = null
     private var onLoadMoreListener: OnLoadMoreListener? = null
     private var loading: Boolean = false
@@ -25,12 +26,12 @@ class MovieAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         this.onFilmClickListener = onFilmClickListener
     }
 
-    fun setFilms(films: MutableList<FilmEntity>) {
+    fun setFilms(films: MutableList<FilmResult>) {
         this.films.addAll(this.films.size, films)
         notifyItemRangeChanged(this.films.size.plus(1), this.films.size.plus(films.size))
     }
 
-    fun setLoadMore(film: FilmEntity?) {
+    fun setLoadMore(film: FilmResult?) {
         this.films.add(this.films.size.plus(1), film)
         notifyItemChanged(this.films.size)
     }
@@ -74,13 +75,12 @@ class MovieAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     inner class FilmHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val BASE_IMAGE_URL = "https://image.tmdb.org/t/p/w500"
-        fun onBindData(film: FilmEntity?) {
+        fun onBindData(film: FilmResult?) {
             itemView.tv_title.text = film?.title
             itemView.tv_published_year.text =
                 String.format("%.1f/10  :  %s", film?.voteAverage, film?.releaseDate)
             itemView.tv_overview.text = film?.overview
-            val imageUrl = BASE_IMAGE_URL + film?.posterPath
+            val imageUrl = BASE_IMAGE_PATH + film?.posterPath
             Glide.with(itemView.context)
                 .load(imageUrl)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -98,7 +98,7 @@ class MovieAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     interface OnFilmClickListener {
-        fun onFilmClick(film: FilmEntity?)
+        fun onFilmClick(film: FilmResult?)
     }
 
     interface OnLoadMoreListener {

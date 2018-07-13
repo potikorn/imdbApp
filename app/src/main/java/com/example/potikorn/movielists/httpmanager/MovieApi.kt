@@ -1,7 +1,7 @@
 package com.example.potikorn.movielists.httpmanager
 
-import com.example.potikorn.movielists.room.Film
-import com.example.potikorn.movielists.room.FilmEntity
+import com.example.potikorn.movielists.dao.Film
+import com.example.potikorn.movielists.dao.FilmResult
 import io.reactivex.Single
 import retrofit2.Response
 import retrofit2.http.GET
@@ -20,5 +20,5 @@ interface MovieApi {
     fun getMovieNowPlaying(@Query("page") page: Int? = 1): Single<Response<Film>>
 
     @GET("movie/{movie_id}")
-    fun getFilmDetail(@Path("movie_id") movieId: Long): Single<Response<FilmEntity>>
+    fun getFilmDetail(@Path("movie_id") movieId: Long): Single<Response<FilmResult>>
 }
