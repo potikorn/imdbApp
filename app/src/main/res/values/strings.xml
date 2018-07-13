@@ -3,4 +3,6 @@
     <string name="title_overview">Overview</string>
     <string name="user_score">User\nscore</string>
     <string name="title_genres">Genres</string>
+    <string name="title_not_now">Not now</string>
+    <string name="action_login_as_guest">Login As Guest</string>
 </resources>
