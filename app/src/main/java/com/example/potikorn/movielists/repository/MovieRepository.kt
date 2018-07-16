@@ -9,6 +9,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
+import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -59,8 +60,8 @@ class MovieRepository @Inject constructor(private val remoteFilmDataSource: Remo
             recommendation
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()),
-            BiFunction<retrofit2.Response<FilmResult>, retrofit2.Response<Film>, Pair<retrofit2.Response<FilmResult>,
-                retrofit2.Response<Film>>> { t1, t2 -> return@BiFunction t1 to t2 })
+            BiFunction<Response<FilmResult>, Response<Film>, Pair<Response<FilmResult>,
+                Response<Film>>> { t1, t2 -> return@BiFunction t1 to t2 })
             .subscribe(
                 { MovieContract().validateZippedResponse(it, callback) },
                 { callback.onObservableError(it.message) })
