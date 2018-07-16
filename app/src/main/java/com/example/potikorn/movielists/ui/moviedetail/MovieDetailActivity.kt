@@ -48,7 +48,10 @@ class MovieDetailActivity : AppCompatActivity() {
         movieViewModel.liveFilmData.observe(this, Observer {
             movieDetailAdapter.setItem(it)
         })
-        movieViewModel.loadFilmDetail(filmId ?: 0)
+        movieViewModel.liveFilmListData.observe(this, Observer {
+            movieDetailAdapter.setRecommendMovie(it)
+        })
+        movieViewModel.loadMovieDetailAndRecommend(filmId ?: 0)
     }
 
     private fun getFilmId() {
