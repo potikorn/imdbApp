@@ -34,4 +34,6 @@ class UserViewModel @Inject constructor(private val userRepository: UserReposito
         isLoading.value = false
         error.value = message
     }
+
+    override fun onUnAuthorized() {}
 }

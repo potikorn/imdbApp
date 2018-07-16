@@ -12,7 +12,8 @@ import javax.inject.Inject
 class MovieViewModel @Inject constructor(private val movieRepository: MovieRepository) :
     ViewModel(),
     BaseSubscriber.SubscribeCallback<Film>,
-    MovieContract.FilmDetailListener {
+    MovieContract.FilmDetailListener,
+    MovieContract.ZipTwoObserverListener<FilmResult, Film> {
 
     val isLoading = MutableLiveData<Boolean>()
     val liveFilmListData = MutableLiveData<Film>()
@@ -42,6 +43,11 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
         movieRepository.getFilmDetail(movieId, this)
     }
 
+    fun loadMovieDetailAndRecommend(movieId: Long) {
+        isLoading.value = true
+        movieRepository.getMovieDetailAndRecommendation(movieId, this)
+    }
+
     override fun onSuccess(body: Film?) {
         page = body?.page?.plus(1)
         isLoading.value = false
@@ -53,6 +59,12 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
         liveFilmData.value = film
     }
 
+    override fun onZippedSuccess(zippedData: Pair<FilmResult?, Film?>) {
+        isLoading.value = false
+        liveFilmData.value = zippedData.first
+        liveFilmListData.value = zippedData.second
+    }
+
     override fun onUnSuccess(message: String?) {
         isLoading.value = false
         error.value = message
@@ -62,4 +74,6 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
         isLoading.value = false
         error.value = message
     }
+
+    override fun onUnAuthorized() {}
 }

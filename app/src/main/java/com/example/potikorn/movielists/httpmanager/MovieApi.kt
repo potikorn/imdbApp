@@ -21,4 +21,7 @@ interface MovieApi {
 
     @GET("movie/{movie_id}")
     fun getFilmDetail(@Path("movie_id") movieId: Long): Single<Response<FilmResult>>
+
+    @GET("movie/{movie_id}/recommendations")
+    fun getMovieRecommendation(@Path("movie_id") movieId: Long): Single<Response<Film>>
 }

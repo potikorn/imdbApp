@@ -11,4 +11,6 @@ class RemoteFilmDataSource @Inject constructor(private val remoteFilmService: Mo
     fun requestNowPlayingList(page: Int) = remoteFilmService.getMovieNowPlaying(page)
 
     fun requestFilmDetail(movieId: Long) = remoteFilmService.getFilmDetail(movieId)
+
+    fun requestMovieRecommendationList(movieId: Long) = remoteFilmService.getMovieRecommendation(movieId)
 }

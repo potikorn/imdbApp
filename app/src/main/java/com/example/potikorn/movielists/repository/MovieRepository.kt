@@ -1,11 +1,15 @@
 package com.example.potikorn.movielists.repository
 
+import android.annotation.SuppressLint
 import com.example.potikorn.movielists.base.BaseSubscriber
 import com.example.potikorn.movielists.dao.Film
 import com.example.potikorn.movielists.dao.FilmResult
 import com.example.potikorn.movielists.remote.RemoteFilmDataSource
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
+import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -35,11 +39,31 @@ class MovieRepository @Inject constructor(private val remoteFilmDataSource: Remo
                 override fun onUnSuccess(message: String?) = callback.onUnSuccess(message)
                 override fun onObservableError(message: String?) =
                     callback.onObservableError(message)
+
+                override fun onUnAuthorized() {}
             }))
     }
 
-    fun funFunc(callback: BaseSubscriber.SubscribeCallback<Film>) {
-//        val searchList = remoteFilmDataSource.requestFilmList("X-men", 1).toObservable()
-//        val nowPlaying = remoteFilmDataSource.requestNowPlayingList(page = 1).toObservable()
+    @SuppressLint("CheckResult")
+    fun getMovieDetailAndRecommendation(
+        movieId: Long,
+        callback: MovieContract.ZipTwoObserverListener<FilmResult, Film>
+    ) {
+        val movieDetail =
+            remoteFilmDataSource.requestFilmDetail(movieId).toObservable()
+        val recommendation =
+            remoteFilmDataSource.requestMovieRecommendationList(movieId).toObservable()
+        Observable.zip(
+            movieDetail
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()),
+            recommendation
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()),
+            BiFunction<Response<FilmResult>, Response<Film>, Pair<Response<FilmResult>,
+                Response<Film>>> { t1, t2 -> return@BiFunction t1 to t2 })
+            .subscribe(
+                { MovieContract().validateZippedResponse(it, callback) },
+                { callback.onObservableError(it.message) })
     }
 }
