@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import com.example.potikorn.movielists.ui.movielist.MovieListFragment
 import com.example.potikorn.movielists.ui.search.SearchFragment
+import com.example.potikorn.movielists.ui.setting.SettingFragment
 
 class MovieViewPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
 
@@ -12,7 +13,7 @@ class MovieViewPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm)
         when (position) {
             0 -> MovieListFragment.newInstance()
             1 -> SearchFragment.newInstance()
-            else -> MovieListFragment.newInstance()
+            else -> SettingFragment.newInstance()
         }
 
     override fun getCount(): Int = 3

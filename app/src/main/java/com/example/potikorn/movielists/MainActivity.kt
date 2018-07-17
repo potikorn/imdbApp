@@ -14,14 +14,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initInstance(savedInstanceState: Bundle?) {
-        if (savedInstanceState == null) {
             vpMain.apply {
                 setPagingEnabled(false)
                 offscreenPageLimit = 2
                 adapter = MovieViewPagerAdapter(supportFragmentManager)
             }
             initBottomNavigation()
-        }
     }
 
     private fun initBottomNavigation() {

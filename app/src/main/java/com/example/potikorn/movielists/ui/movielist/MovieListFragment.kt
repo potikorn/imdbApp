@@ -5,17 +5,15 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import com.example.potikorn.movielists.ImdbApplication
 import com.example.potikorn.movielists.R
+import com.example.potikorn.movielists.base.ui.BaseFragment
+import com.example.potikorn.movielists.base.ui.FragmentLifecycleOwner
 import com.example.potikorn.movielists.dao.Film
 import com.example.potikorn.movielists.dao.FilmResult
+import com.example.potikorn.movielists.di.AppComponent
 import com.example.potikorn.movielists.extensions.showToast
 import com.example.potikorn.movielists.ui.moviedetail.MovieDetailActivity
 import com.example.potikorn.movielists.ui.moviedetail.MovieDetailActivity.Companion.EXTRA_FILM_ID
@@ -25,49 +23,26 @@ import com.willowtreeapps.spruce.sort.DefaultSort
 import kotlinx.android.synthetic.main.fragment_movie_list.*
 import javax.inject.Inject
 
-class MovieListFragment : Fragment(), MovieAdapter.OnFilmClickListener,
+class MovieListFragment : BaseFragment(), MovieAdapter.OnFilmClickListener,
     MovieAdapter.OnLoadMoreListener {
 
-    @Inject
-    lateinit var movieViewModelFactory: MovieViewModelFactory
+    override fun layoutToInflate(): Int = R.layout.fragment_movie_list
 
-    private var spruceAnimator: Animator? = null
+    override fun createLifecycleOwner(): FragmentLifecycleOwner = FragmentLifecycleOwner.create()
 
-    private val movieViewModel: MovieViewModel by lazy {
-        ViewModelProviders.of(this, movieViewModelFactory).get(MovieViewModel::class.java)
-    }
-    private val movieAdapter: MovieAdapter? by lazy { MovieAdapter() }
-    private var isRefresh = false
+    override fun doInjection(appComponent: AppComponent) = appComponent.inject(this)
 
-    companion object {
-        fun newInstance(): MovieListFragment {
-            val mainFragment = MovieListFragment()
-            val args = Bundle()
-            mainFragment.arguments = args
-            return mainFragment
-        }
-    }
+    override fun startView() {}
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        ImdbApplication.appComponent.inject(this)
+    override fun stopView() {}
+
+    override fun destroyView() {}
+
+    override fun setupInstance() {
         initViewModel()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_movie_list, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initInstance()
-    }
-
-    private fun initInstance() {
+    override fun setupView() {
         rv_movie_list.layoutManager = object : LinearLayoutManager(context) {
             override fun onLayoutChildren(
                 recycler: RecyclerView.Recycler?,
@@ -87,6 +62,28 @@ class MovieListFragment : Fragment(), MovieAdapter.OnFilmClickListener,
         }
     }
 
+    override fun initialize() {
+        movieViewModel.loadNowPlayingList()
+    }
+
+    @Inject
+    lateinit var movieViewModelFactory: MovieViewModelFactory
+
+    private var spruceAnimator: Animator? = null
+
+    private val movieViewModel: MovieViewModel by lazy {
+        ViewModelProviders.of(this, movieViewModelFactory).get(MovieViewModel::class.java)
+    }
+    private val movieAdapter: MovieAdapter? by lazy { MovieAdapter() }
+    private var isRefresh = false
+
+    override fun onFilmClick(film: FilmResult?) {
+        startActivity(
+            Intent(context, MovieDetailActivity::class.java)
+                .putExtra(EXTRA_FILM_ID, film?.id)
+        )
+    }
+
     private fun initViewModel() {
         movieViewModel.isLoading.observe(this, Observer { srl.isRefreshing = it ?: false })
         movieViewModel.error.observe(this, Observer { processError(it) })
@@ -103,17 +100,9 @@ class MovieListFragment : Fragment(), MovieAdapter.OnFilmClickListener,
                 movieAdapter?.setFilms(filmModels.movieDetails ?: arrayListOf())
             } ?: Log.e("MAINFRAGMENT", "Data is null")
         })
-        movieViewModel.loadNowPlayingList()
     }
 
     private fun processError(error: String?) = activity?.showToast(error)
-
-    override fun onFilmClick(film: FilmResult?) {
-        startActivity(
-            Intent(context, MovieDetailActivity::class.java)
-                .putExtra(EXTRA_FILM_ID, film?.id)
-        )
-    }
 
     private fun initSpruce() {
         spruceAnimator = Spruce.SpruceBuilder(rv_movie_list)
@@ -125,5 +114,14 @@ class MovieListFragment : Fragment(), MovieAdapter.OnFilmClickListener,
     override fun onLoadMore() {
         Log.e("Best", "ENTER LOAD MORE")
         movieViewModel.loadNowPlayingList()
+    }
+
+    companion object {
+        fun newInstance(): MovieListFragment {
+            val mainFragment = MovieListFragment()
+            val args = Bundle()
+            mainFragment.arguments = args
+            return mainFragment
+        }
     }
 }
