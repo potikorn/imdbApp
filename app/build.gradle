@@ -82,7 +82,13 @@ dependencies {
     implementation('com.github.ihsanbal:LoggingInterceptor:2.0.6') {
         exclude group: 'org.json', module: 'json'
     }
+
+    // Firebase
+    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.google.firebase:firebase-database:16.0.1'
+    implementation 'com.google.firebase:firebase-auth:16.0.2'
 }
 repositories {
     mavenCentral()
 }
+apply plugin: 'com.google.gms.google-services'

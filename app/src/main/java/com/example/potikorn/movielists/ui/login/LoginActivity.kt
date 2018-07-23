@@ -10,6 +10,9 @@ import com.example.potikorn.movielists.MainActivity
 import com.example.potikorn.movielists.R
 import com.example.potikorn.movielists.data.User
 import com.example.potikorn.movielists.extensions.showToast
+import com.example.potikorn.movielists.ui.register.AcceptRegisterToken
+import com.example.potikorn.movielists.ui.viewmodel.UserViewModel
+import com.example.potikorn.movielists.ui.viewmodel.UserViewModelFactory
 import kotlinx.android.synthetic.main.activity_login.*
 import javax.inject.Inject
 
@@ -34,6 +37,9 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun setupView() {
+        btnCreateAccount.setOnClickListener {
+            startActivity(Intent(this, AcceptRegisterToken::class.java))
+        }
         btnLoginAsGuest.setOnClickListener { userViewModel.requestGuestSession() }
         tvNotLogin.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
