@@ -49,8 +49,7 @@ class SettingFragment : BaseFragment() {
     companion object {
         fun newInstance(bundle: Bundle? = null): SettingFragment {
             val settingFragment = SettingFragment()
-            val args = Bundle()
-            settingFragment.arguments = args
+            settingFragment.arguments = bundle
             return settingFragment
         }
     }

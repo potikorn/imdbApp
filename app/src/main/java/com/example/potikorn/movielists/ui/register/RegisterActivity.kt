@@ -22,7 +22,6 @@ class RegisterActivity : AppCompatActivity() {
     lateinit var userViewModelFactory: UserViewModelFactory
     @Inject
     lateinit var userPref: User
-
     private val userViewModel: UserViewModel by lazy {
         ViewModelProviders.of(this, userViewModelFactory).get(UserViewModel::class.java)
     }
@@ -37,7 +36,7 @@ class RegisterActivity : AppCompatActivity() {
                 else -> {
                     userViewModel.createUserWithFirebase(
                         UserDao(
-                            email = etEmail.text.trim().toString(),
+                            email = tiEtEmail.text.trim().toString(),
                             password = tiEtPassword.text.trim().toString()
                         )
                     )
