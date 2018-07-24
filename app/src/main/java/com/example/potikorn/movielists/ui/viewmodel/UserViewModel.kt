@@ -35,6 +35,11 @@ class UserViewModel @Inject constructor(private val userRepository: UserReposito
         liveUserViewModel.value = user
     }
 
+    override fun onAuthFailure(message: String?) {
+        isLoading.value = false
+        error.value = message
+    }
+
     override fun onSuccess(body: GuestDao?) {
         isLoading.value = false
         liveGuestUserData.value = body

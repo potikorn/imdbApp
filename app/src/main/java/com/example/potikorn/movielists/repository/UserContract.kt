@@ -6,5 +6,6 @@ class UserContract {
 
     interface AuthStateListener {
         fun onAuthSuccess(user: FirebaseUser)
+        fun onAuthFailure(message: String?)
     }
 }

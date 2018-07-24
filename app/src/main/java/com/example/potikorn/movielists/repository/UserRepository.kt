@@ -20,11 +20,7 @@ class UserRepository @Inject constructor(private val remoteUserDataSource: Remot
     fun createUser(userDao: UserDao, callback: UserContract.AuthStateListener) {
         val mAuth = FirebaseAuth.getInstance()
         mAuth.createUserWithEmailAndPassword(userDao.email ?: "", userDao.password ?: "")
-            .addOnSuccessListener {
-                callback.onAuthSuccess(it.user)
-            }
-            .addOnFailureListener {
-                // TODO add on failure
-            }
+            .addOnSuccessListener { callback.onAuthSuccess(it.user) }
+            .addOnFailureListener { callback.onAuthFailure(it.message) }
     }
 }
