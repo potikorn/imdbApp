@@ -1,6 +1,7 @@
 package com.example.potikorn.movielists.di
 
 import com.example.potikorn.movielists.ui.login.LoginActivity
+import com.example.potikorn.movielists.ui.login.fragment.LoginFragment
 import com.example.potikorn.movielists.ui.moviedetail.MovieDetailActivity
 import com.example.potikorn.movielists.ui.movielist.MovieListFragment
 import com.example.potikorn.movielists.ui.register.RegisterActivity
@@ -20,4 +21,5 @@ interface AppComponent {
     fun inject(loginActivity: LoginActivity)
     fun inject(settingFragment: SettingFragment)
     fun inject(registerActivity: RegisterActivity)
+    fun inject(loginFragment: LoginFragment)
 }

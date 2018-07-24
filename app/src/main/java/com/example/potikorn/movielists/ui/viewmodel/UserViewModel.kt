@@ -20,6 +20,10 @@ class UserViewModel @Inject constructor(private val userRepository: UserReposito
     val liveUserViewModel = MutableLiveData<FirebaseUser>()
     val error = MutableLiveData<String>()
 
+    fun signInWithFirebase(userDao: UserDao) {
+        userRepository.requestSignIn(userDao, this)
+    }
+
     fun requestGuestSession() {
         isLoading.value = true
         userRepository.getGuestSession(this)
