@@ -6,6 +6,20 @@
     android:background="@color/colorPrimary">
 
     <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btnCreateAccount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/action_create_account"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toTopOf="@+id/btnLoginAsGuest"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/btnLoginAsGuest"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,6 +27,7 @@
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="16dp"
         android:text="@string/action_login_as_guest"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toTopOf="@+id/tvNotLogin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -25,6 +40,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="24dp"
         android:text="@string/title_not_now"
+        android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

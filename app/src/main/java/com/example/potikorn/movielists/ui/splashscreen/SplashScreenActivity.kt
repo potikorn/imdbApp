@@ -3,7 +3,6 @@ package com.example.potikorn.movielists.ui.splashscreen
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import com.example.potikorn.movielists.ImdbApplication
 import com.example.potikorn.movielists.MainActivity
 import com.example.potikorn.movielists.R
@@ -40,7 +39,7 @@ class SplashScreenActivity : AppCompatActivity() {
     }
 
     private fun startDelay() {
-        compositeDisposable.add(Observable.timer(3, TimeUnit.SECONDS)
+        compositeDisposable.add(Observable.timer(2, TimeUnit.SECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { isLogin() }
@@ -48,15 +47,19 @@ class SplashScreenActivity : AppCompatActivity() {
     }
 
     private fun isLogin() {
-        Log.e("BEST", userData.isLogin().toString())
-        when (!userData.isLogin()) {
-            true -> {
-                startActivity(Intent(this, LoginActivity::class.java))
-                finish()
-            }
-            else -> {
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
+        if (userData.isFirstTime()) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        } else {
+            when (!userData.isLogin() && userData.isFirstTime()) {
+                true -> {
+                    startActivity(Intent(this, LoginActivity::class.java))
+                    finish()
+                }
+                else -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                }
             }
         }
     }
