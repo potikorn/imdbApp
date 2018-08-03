@@ -5,15 +5,18 @@ import android.arch.lifecycle.ViewModel
 import com.example.potikorn.movielists.base.BaseSubscriber
 import com.example.potikorn.movielists.dao.Film
 import com.example.potikorn.movielists.dao.FilmResult
+import com.example.potikorn.movielists.extensions.convertToJsonObject
 import com.example.potikorn.movielists.repository.MovieContract
 import com.example.potikorn.movielists.repository.MovieRepository
+import com.google.gson.Gson
 import javax.inject.Inject
 
 class MovieViewModel @Inject constructor(private val movieRepository: MovieRepository) :
     ViewModel(),
     BaseSubscriber.SubscribeCallback<Film>,
     MovieContract.FilmDetailListener,
-    MovieContract.ZipTwoObserverListener<FilmResult, Film> {
+    MovieContract.ZipTwoObserverListener<FilmResult, Film>,
+    MovieContract.FavoriteListener {
 
     val isLoading = MutableLiveData<Boolean>()
     val liveFilmListData = MutableLiveData<Film>()
@@ -48,6 +51,10 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
         movieRepository.getMovieDetailAndRecommendation(movieId, this)
     }
 
+    fun favoriteMovie(filmModel: FilmResult) {
+        movieRepository.rateMovie(Gson().toJson(filmModel).convertToJsonObject(), this)
+    }
+
     override fun onSuccess(body: Film?) {
         page = body?.page?.plus(1)
         isLoading.value = false
@@ -75,5 +82,7 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
         error.value = message
     }
 
-    override fun onUnAuthorized() {}
+    override fun onUnAuthorized() {
+        error.value = "Unauthorized"
+    }
 }

@@ -14,7 +14,7 @@ class Film {
 }
 
 data class FilmResult(
-    @SerializedName("id") var id: Long?,
+    @SerializedName("id") var id: Long? = null,
     @SerializedName("title") var title: String? = null,
     @SerializedName("vote_average") var voteAverage: Double? = null,
     @SerializedName("poster_path") var posterPath: String? = null,

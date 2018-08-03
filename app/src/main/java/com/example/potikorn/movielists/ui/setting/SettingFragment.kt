@@ -32,11 +32,7 @@ class SettingFragment : BaseFragment() {
 
     override fun setupView() {
         tvLogout.setOnClickListener {
-            user.apply {
-                setLogin(false)
-                setSessionExpired("")
-                setSessionId("")
-            }
+            user.apply { clear() }
             startActivity(
                 Intent(context, LoginActivity::class.java)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)

@@ -1,6 +1,8 @@
 package com.example.potikorn.movielists.di
 
 import com.example.potikorn.movielists.BuildConfig
+import com.example.potikorn.movielists.data.User
+import com.example.potikorn.movielists.httpmanager.FirebaseApi
 import com.example.potikorn.movielists.httpmanager.MovieApi
 import com.example.potikorn.movielists.httpmanager.UserApi
 import com.example.potikorn.movielists.remote.RemoteContract
@@ -10,15 +12,22 @@ import com.ihsanbal.logging.Level
 import com.ihsanbal.logging.LoggingInterceptor
 import dagger.Module
 import dagger.Provides
+import okhttp3.CertificatePinner
 import okhttp3.OkHttpClient
 import okhttp3.internal.platform.Platform
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 class RemoteModule {
+
+    companion object {
+        private const val TIME_OUT = 60L
+    }
 
     @Provides
     @Singleton
@@ -31,6 +40,10 @@ class RemoteModule {
     @Singleton
     fun provideOkHttpClient(): OkHttpClient =
         OkHttpClient.Builder()
+            .certificatePinner(CertificatePinner.DEFAULT)
+            .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
+            .readTimeout(TIME_OUT, TimeUnit.SECONDS)
+            .writeTimeout(TIME_OUT, TimeUnit.SECONDS)
             .addInterceptor(
                 LoggingInterceptor.Builder()
                     .loggable(BuildConfig.DEBUG)
@@ -46,9 +59,44 @@ class RemoteModule {
 
     @Provides
     @Singleton
+    @Named("FirebaseOkHttp")
+    fun provideFirebaseOkHttpClient(userData: User): OkHttpClient {
+        val okHttpClientBuilder: OkHttpClient.Builder = OkHttpClient.Builder()
+        okHttpClientBuilder
+            .certificatePinner(CertificatePinner.DEFAULT)
+            .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
+            .readTimeout(TIME_OUT, TimeUnit.SECONDS)
+            .writeTimeout(TIME_OUT, TimeUnit.SECONDS)
+            .addInterceptor(
+                LoggingInterceptor.Builder().apply {
+                    loggable(BuildConfig.DEBUG)
+                    setLevel(Level.BASIC)
+                    log(Platform.INFO)
+                    request("Firebase-Request")
+                    response("Firebase-Response")
+                    if (userData.getUserId().isNotEmpty())
+                        addHeader("uid", userData.getUserId())
+                }.build()
+            )
+        return okHttpClientBuilder.build()
+    }
+
+    @Provides
+    @Singleton
     fun provideRetrofit(gson: Gson, okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
             .baseUrl(RemoteContract.BASE_API_LAYER)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .client(okHttpClient)
+            .build()
+
+    @Provides
+    @Singleton
+    @Named("Firebase")
+    fun provideFirebaseRetrofit(gson: Gson, @Named("FirebaseOkHttp") okHttpClient: OkHttpClient): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(RemoteContract.BASE_FIREBASE_API_LAYER)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .client(okHttpClient)
@@ -63,4 +111,9 @@ class RemoteModule {
     @Singleton
     fun provideRemoteUserService(retrofit: Retrofit): UserApi =
         retrofit.create(UserApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideRemoteFirebaseService(@Named("Firebase") retrofit: Retrofit): FirebaseApi =
+        retrofit.create(FirebaseApi::class.java)
 }

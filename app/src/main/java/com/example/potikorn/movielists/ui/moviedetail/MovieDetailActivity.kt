@@ -7,13 +7,15 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import com.example.potikorn.movielists.ImdbApplication
 import com.example.potikorn.movielists.R
+import com.example.potikorn.movielists.dao.FilmResult
 import com.example.potikorn.movielists.extensions.showToast
 import com.example.potikorn.movielists.ui.movielist.MovieViewModel
 import com.example.potikorn.movielists.ui.movielist.MovieViewModelFactory
 import kotlinx.android.synthetic.main.activity_movie_detail.*
 import javax.inject.Inject
 
-class MovieDetailActivity : AppCompatActivity() {
+class MovieDetailActivity : AppCompatActivity(),
+    OnActionClickListener {
 
     @Inject
     lateinit var movieViewModelFactory: MovieViewModelFactory
@@ -35,10 +37,16 @@ class MovieDetailActivity : AppCompatActivity() {
         initViewModel()
     }
 
+    override fun onFavoriteClick(filmModel: FilmResult) {
+        movieViewModel.favoriteMovie(filmModel)
+    }
+
     private fun setupView() {
         rvMainMovieDetail.apply {
             layoutManager = LinearLayoutManager(this@MovieDetailActivity)
-            adapter = movieDetailAdapter
+            adapter = movieDetailAdapter.apply {
+                setOnActionClickListener(this@MovieDetailActivity)
+            }
         }
     }
 

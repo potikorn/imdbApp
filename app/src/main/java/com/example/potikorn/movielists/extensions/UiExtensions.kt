@@ -18,6 +18,8 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.potikorn.movielists.R
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 
 fun Activity.hideKeyboard() {
     val imm = this.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -58,7 +60,7 @@ fun View.getBitmapFromView(view: View): Bitmap {
     return bitmap
 }
 
-fun View.isSelectStated() {
+fun View.isChangeSelectStated() {
     when (this.isSelected) {
         true -> this.isSelected = false
         else -> this.isSelected = true
@@ -75,4 +77,9 @@ fun AppCompatActivity.addFragment(fragment: Fragment, frameId: Int) {
 
 fun AppCompatActivity.replaceFragment(fragment: Fragment, frameId: Int) {
     supportFragmentManager.inTransaction { replace(frameId, fragment) }
+}
+
+fun String.convertToJsonObject(): JsonObject? {
+    val parser = JsonParser()
+    return parser.parse(this).asJsonObject
 }

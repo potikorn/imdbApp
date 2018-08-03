@@ -43,4 +43,10 @@ class MovieContract {
             }
         }
     }
+
+    interface FavoriteListener {
+        fun onUnSuccess(message: String?)
+        fun onObservableError(message: String?)
+        fun onUnAuthorized()
+    }
 }
