@@ -67,6 +67,15 @@ class RemoteModule {
             .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
             .readTimeout(TIME_OUT, TimeUnit.SECONDS)
             .writeTimeout(TIME_OUT, TimeUnit.SECONDS)
+            .addInterceptor { chain ->
+                val original = chain.request()
+                val requestBuilder = original.newBuilder()
+                if (userData.getUserId().isNotEmpty())
+                    requestBuilder.addHeader("uid", userData.getUserId())
+                requestBuilder.method(original.method(), original.body())
+                val request = requestBuilder.build()
+                chain.proceed(request)
+            }
             .addInterceptor(
                 LoggingInterceptor.Builder().apply {
                     loggable(BuildConfig.DEBUG)
@@ -74,8 +83,6 @@ class RemoteModule {
                     log(Platform.INFO)
                     request("Firebase-Request")
                     response("Firebase-Response")
-                    if (userData.getUserId().isNotEmpty())
-                        addHeader("uid", userData.getUserId())
                 }.build()
             )
         return okHttpClientBuilder.build()
