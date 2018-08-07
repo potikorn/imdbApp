@@ -9,6 +9,8 @@ import com.example.potikorn.movielists.dao.Film
 import com.example.potikorn.movielists.dao.FilmResult
 import com.example.potikorn.movielists.remote.RemoteFilmDataSource
 import com.example.potikorn.movielists.remote.RemoteFirebaseDatasource
+import com.example.potikorn.movielists.room.favorite.FavoriteEntity
+import com.example.potikorn.movielists.room.favorite.FavoriteLocalDao
 import com.google.gson.JsonObject
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -21,7 +23,8 @@ import javax.inject.Singleton
 @Singleton
 class MovieRepository @Inject constructor(
     private val remoteFilmDataSource: RemoteFilmDataSource,
-    private val remoteFirebaseDatasource: RemoteFirebaseDatasource
+    private val remoteFirebaseDatasource: RemoteFirebaseDatasource,
+    private val roomFavoriteDataSource: FavoriteLocalDao
 ) {
 
     fun getFilmList(query: String, page: Int, callback: BaseSubscriber.SubscribeCallback<Film>) {
@@ -89,16 +92,33 @@ class MovieRepository @Inject constructor(
             }))
     }
 
-    fun getFavoriteList(): FavoriteDao? {
+    @SuppressLint("CheckResult")
+    fun getFavoriteList(
+        onSuccess: (data: FavoriteDao?) -> Unit,
+        onError: (message: String?) -> Unit
+    ) {
         remoteFirebaseDatasource.requestFavoriteMovieList()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 Log.e(MovieRepository::class.java.simpleName, "$it")
+                val favoriteEntity: MutableList<FavoriteEntity>? = null
+                it.body()?.data?.forEach { filmDetail ->
+                    favoriteEntity?.add(
+                        FavoriteEntity(
+                            movieId = filmDetail.id,
+                            title = filmDetail.title,
+                            posterPath = filmDetail.posterPath
+                        )
+                    )
+                }
+                favoriteEntity?.toTypedArray()
+                    ?.let { entities -> roomFavoriteDataSource.insertAll(*entities) }
+                onSuccess.invoke(it.body())
             }, {
                 it.printStackTrace()
                 Log.e(MovieRepository::class.java.simpleName, "${it.message}")
+                onError.invoke(it.message)
             })
-        return FavoriteDao()
     }
 }

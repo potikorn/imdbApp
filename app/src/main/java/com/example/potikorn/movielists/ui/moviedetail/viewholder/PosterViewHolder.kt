@@ -43,6 +43,7 @@ class PosterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
                 callback?.onFavoriteClick(FilmResult().apply {
                     id = film.id
                     title = film.title
+                    posterPath = film.posterPath
                 })
             }
         }

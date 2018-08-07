@@ -7,7 +7,8 @@ data class FavoriteDao(
 ) : BaseDao()
 
 data class FavoriteDetailDao(
-    @SerializedName("id") var id: Int? = null,
+    @SerializedName("id") var id: Long? = null,
     @SerializedName("title") var title: String? = null,
+    @SerializedName("poster_path") var posterPath: String? = null,
     @SerializedName("created_at") var createdAt: String? = null
 )

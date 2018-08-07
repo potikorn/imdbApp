@@ -12,10 +12,14 @@ class FavoriteViewModel @Inject constructor(private val movieRepository: MovieRe
     val error = MutableLiveData<String>()
     val liveFavoriteList = MutableLiveData<FavoriteDao>()
 
-    fun getFavoriteList(): MutableLiveData<FavoriteDao> {
+    fun getFavoriteList() {
         isLoading.value = true
-        liveFavoriteList.value = movieRepository.getFavoriteList()
-        return liveFavoriteList
+        movieRepository.getFavoriteList({
+            isLoading.value = false
+            liveFavoriteList.value = it
+        }, {
+            isLoading.value = false
+            error.value = it
+        })
     }
-
 }
