@@ -82,6 +82,7 @@ class LoginFragment : BaseFragment() {
         userViewModel.liveUserViewModel.observe(this, Observer {
             it?.let {
                 userPref.apply {
+                    setFirstTime(false)
                     setLogin(true)
                     setUserId(it.uid)
                 }

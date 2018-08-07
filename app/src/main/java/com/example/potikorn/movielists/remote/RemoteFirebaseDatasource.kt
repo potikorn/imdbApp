@@ -7,4 +7,5 @@ import javax.inject.Inject
 class RemoteFirebaseDatasource @Inject constructor(private val remoteFirebaseService: FirebaseApi) {
 
     fun requestFavoriteMovie(filmObj: JsonObject?) = remoteFirebaseService.favoriteMovie(filmObj)
+    fun requestFavoriteMovieList() = remoteFirebaseService.getFavoriteList()
 }

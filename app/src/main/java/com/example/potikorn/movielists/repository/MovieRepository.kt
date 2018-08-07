@@ -1,8 +1,10 @@
 package com.example.potikorn.movielists.repository
 
 import android.annotation.SuppressLint
+import android.util.Log
 import com.example.potikorn.movielists.base.BaseSubscriber
 import com.example.potikorn.movielists.dao.BaseDao
+import com.example.potikorn.movielists.dao.FavoriteDao
 import com.example.potikorn.movielists.dao.Film
 import com.example.potikorn.movielists.dao.FilmResult
 import com.example.potikorn.movielists.remote.RemoteFilmDataSource
@@ -85,5 +87,18 @@ class MovieRepository @Inject constructor(
 
                 override fun onUnAuthorized() = callback.onUnAuthorized()
             }))
+    }
+
+    fun getFavoriteList(): FavoriteDao? {
+        remoteFirebaseDatasource.requestFavoriteMovieList()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                Log.e(MovieRepository::class.java.simpleName, "$it")
+            }, {
+                it.printStackTrace()
+                Log.e(MovieRepository::class.java.simpleName, "${it.message}")
+            })
+        return FavoriteDao()
     }
 }

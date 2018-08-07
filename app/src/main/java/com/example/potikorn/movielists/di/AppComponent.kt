@@ -6,7 +6,9 @@ import com.example.potikorn.movielists.ui.moviedetail.MovieDetailActivity
 import com.example.potikorn.movielists.ui.movielist.MovieListFragment
 import com.example.potikorn.movielists.ui.register.RegisterActivity
 import com.example.potikorn.movielists.ui.search.SearchFragment
+import com.example.potikorn.movielists.ui.setting.MainSettingFragment
 import com.example.potikorn.movielists.ui.setting.SettingFragment
+import com.example.potikorn.movielists.ui.setting.favorite.FavoriteFragment
 import com.example.potikorn.movielists.ui.splashscreen.SplashScreenActivity
 import dagger.Component
 import javax.inject.Singleton
@@ -22,4 +24,6 @@ interface AppComponent {
     fun inject(settingFragment: SettingFragment)
     fun inject(registerActivity: RegisterActivity)
     fun inject(loginFragment: LoginFragment)
+    fun inject(mainSettingFragment: MainSettingFragment)
+    fun inject(favoriteFragment: FavoriteFragment)
 }
