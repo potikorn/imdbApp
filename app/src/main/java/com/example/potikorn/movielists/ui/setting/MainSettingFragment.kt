@@ -35,7 +35,12 @@ class MainSettingFragment : BaseFragment() {
         tvFavorite.setOnClickListener {
             fragmentManager
                 ?.beginTransaction()
-                ?.setCustomAnimations(R.anim.activity_left_push_in, R.anim.activity_left_push_out)
+                ?.setCustomAnimations(
+                    R.anim.activity_left_push_in,
+                    R.anim.activity_left_push_out,
+                    R.anim.activity_right_push_in,
+                    R.anim.activity_right_push_out
+                )
                 ?.addToBackStack(MainSettingFragment::class.java.simpleName)
                 ?.add(R.id.frameMainSettingContainer, FavoriteFragment.newInstance())?.commit()
         }

@@ -21,9 +21,15 @@ class MovieAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var onFilmClickListener: OnFilmClickListener? = null
     private var onLoadMoreListener: OnLoadMoreListener? = null
     private var loading: Boolean = false
+    private var functionSomething: ((FilmResult?) -> Unit)? = null
 
     fun setOnFilmClickListener(onFilmClickListener: OnFilmClickListener) {
         this.onFilmClickListener = onFilmClickListener
+    }
+
+    // Same as callback above but take input function as param.
+    fun setOnFilmClickFunction(func: (FilmResult?) -> Unit) {
+        functionSomething = func
     }
 
     fun setFilms(films: MutableList<FilmResult>) {
@@ -58,7 +64,7 @@ class MovieAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is FilmHolder -> holder.onBindData(films[position])
+            is FilmHolder -> holder.onBindData(films[position], functionSomething)
             else -> (holder as LoadMoreViewHolder).onBindData()
         }
     }
@@ -75,7 +81,7 @@ class MovieAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     inner class FilmHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun onBindData(film: FilmResult?) {
+        fun onBindData(film: FilmResult?, func: ((FilmResult?) -> Unit)? = null) {
             itemView.tv_title.text = film?.title
             itemView.tv_published_year.text =
                 String.format("%.1f/10  :  %s", film?.voteAverage, film?.releaseDate)
@@ -88,7 +94,10 @@ class MovieAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 .placeholder(R.mipmap.ic_launcher)
                 .crossFade()
                 .into(itemView.iv_poster)
-            itemView.setOnClickListener { onFilmClickListener?.onFilmClick(film) }
+            itemView.setOnClickListener {
+                onFilmClickListener?.onFilmClick(film)
+                func?.invoke(film)
+            }
         }
     }
 
