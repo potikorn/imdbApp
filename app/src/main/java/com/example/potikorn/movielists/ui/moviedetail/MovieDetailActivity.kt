@@ -15,6 +15,7 @@ import com.example.potikorn.movielists.ui.movielist.MovieViewModelFactory
 import com.example.potikorn.movielists.ui.viewmodel.FavoriteViewModel
 import com.example.potikorn.movielists.ui.viewmodel.FavoriteViewModelFactory
 import kotlinx.android.synthetic.main.activity_movie_detail.*
+import kotlinx.android.synthetic.main.item_poster_movie_detail.view.*
 import javax.inject.Inject
 
 class MovieDetailActivity : AppCompatActivity(),
@@ -68,10 +69,23 @@ class MovieDetailActivity : AppCompatActivity(),
             movieDetailAdapter.setRecommendMovie(it)
         })
         movieViewModel.loadMovieDetailAndRecommend(filmId ?: 0)
-        favoriteViewModel.getFavoriteById(filmId ?: 0).observe(this, Observer { FilmEntity ->
-            FilmEntity?.let {
-                Log.e(MovieDetailActivity::class.java.simpleName, "data is existed")
-            } ?: Log.e(MovieDetailActivity::class.java.simpleName, "data is not exited")
+        favoriteViewModel.getFavoriteById(filmId ?: 0).observe(this, Observer { filmEntity ->
+            Log.e(MovieDetailActivity::class.java.simpleName, "$filmEntity")
+            Log.e(
+                MovieDetailActivity::class.java.simpleName,
+                "${rvMainMovieDetail.adapter.itemCount}"
+            )
+            filmEntity?.let {
+                Log.e(MovieDetailActivity::class.java.simpleName, "data is exited")
+                rvMainMovieDetail?.findViewHolderForAdapterPosition(0)
+                    ?.itemView?.ivIconFavorite?.isSelected = true
+                movieDetailAdapter.onPosterChanged()
+            } ?: kotlin.run {
+                Log.e(MovieDetailActivity::class.java.simpleName, "data is not exited")
+                rvMainMovieDetail?.findViewHolderForAdapterPosition(0)
+                    ?.itemView?.ivIconFavorite?.isSelected = false
+                movieDetailAdapter.onPosterChanged()
+            }
         })
     }
 

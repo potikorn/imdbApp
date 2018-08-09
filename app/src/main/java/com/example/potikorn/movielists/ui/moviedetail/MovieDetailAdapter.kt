@@ -63,4 +63,8 @@ class MovieDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     fun setOnActionClickListener(callback: OnActionClickListener) {
         onActionClick = callback
     }
+
+    fun onPosterChanged() {
+
+    }
 }

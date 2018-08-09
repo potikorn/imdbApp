@@ -18,4 +18,7 @@ interface FavoriteLocalDao {
 
     @Query("SELECT * FROM favorite WHERE movieId = :id")
     fun getFilmsById(id: Long): LiveData<FavoriteEntity>
+
+    @Query("DELETE FROM favorite")
+    fun deleteAll()
 }

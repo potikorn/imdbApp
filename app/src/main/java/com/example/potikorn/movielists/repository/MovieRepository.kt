@@ -2,7 +2,6 @@ package com.example.potikorn.movielists.repository
 
 import android.annotation.SuppressLint
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
 import android.util.Log
 import com.example.potikorn.movielists.base.BaseSubscriber
 import com.example.potikorn.movielists.dao.BaseDao
@@ -100,16 +99,7 @@ class MovieRepository @Inject constructor(
 
     @SuppressLint("CheckResult")
     fun getFavoriteById(movieId: Long): LiveData<FavoriteEntity> {
-        Log.e(MovieRepository::class.java.simpleName, "$movieId")
-        val liveFilmData = MutableLiveData<FavoriteEntity>()
-        Observable.fromCallable { roomFavoriteDataSource.getFilmsById(movieId) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                Log.e(MovieRepository::class.java.simpleName, "Already executed! ${it.value}")
-                liveFilmData.value = it.value
-            }
-        return liveFilmData
+        return roomFavoriteDataSource.getFilmsById(movieId)
     }
 
     @SuppressLint("CheckResult")
@@ -129,7 +119,10 @@ class MovieRepository @Inject constructor(
                     )
                 }
                 favoriteEntity?.let { entities ->
-                    Observable.fromCallable { roomFavoriteDataSource.insertAll(*entities.toTypedArray()) }
+                    Observable.fromCallable {
+                        roomFavoriteDataSource.deleteAll()
+                        roomFavoriteDataSource.insertAll(*entities.toTypedArray())
+                    }
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe {
