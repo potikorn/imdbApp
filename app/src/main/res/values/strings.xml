@@ -21,4 +21,14 @@
     <string name="title_home">Home</string>
     <string name="action_login">Login</string>
     <string name="action_go_to_favorite">Favorite List</string>
+    <string name="title_app_language">App Language</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="title_select_your_language">Select your language</string>
+    <string name="title_english">English</string>
+    <string name="title_thailand">Thailand</string>
+    <string-array name="choose_language">
+        <item>English</item>
+        <item>Thailand</item>
+    </string-array>
 </resources>

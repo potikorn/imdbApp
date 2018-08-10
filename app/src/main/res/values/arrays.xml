@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="language">
+        <item>en-US</item>
+        <item>th-TH</item>
+    </array>
+</resources>

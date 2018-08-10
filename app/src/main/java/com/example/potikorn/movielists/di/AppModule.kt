@@ -2,6 +2,8 @@ package com.example.potikorn.movielists.di
 
 import android.content.Context
 import com.example.potikorn.movielists.ImdbApplication
+import com.example.potikorn.movielists.data.AppSettings
+import com.example.potikorn.movielists.data.SettingsData
 import com.example.potikorn.movielists.data.User
 import com.example.potikorn.movielists.data.UserData
 import dagger.Module
@@ -19,4 +21,9 @@ class AppModule(private val tmdbApplication: ImdbApplication) {
     @Singleton
     fun provideUserSharedPreferences(): User =
         UserData(tmdbApplication.getSharedPreferences("user_data", Context.MODE_PRIVATE))
+
+    @Provides
+    @Singleton
+    fun provideAppSettingSharedPreferences(): AppSettings =
+        SettingsData(tmdbApplication.getSharedPreferences("setting_data", Context.MODE_PRIVATE))
 }

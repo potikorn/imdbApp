@@ -1,6 +1,7 @@
 package com.example.potikorn.movielists.di
 
 import com.example.potikorn.movielists.BuildConfig
+import com.example.potikorn.movielists.data.AppSettings
 import com.example.potikorn.movielists.data.User
 import com.example.potikorn.movielists.httpmanager.FirebaseApi
 import com.example.potikorn.movielists.httpmanager.MovieApi
@@ -38,12 +39,24 @@ class RemoteModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient =
+    fun provideOkHttpClient(settingData: AppSettings): OkHttpClient =
         OkHttpClient.Builder()
             .certificatePinner(CertificatePinner.DEFAULT)
             .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
             .readTimeout(TIME_OUT, TimeUnit.SECONDS)
             .writeTimeout(TIME_OUT, TimeUnit.SECONDS)
+            .addInterceptor { chain ->
+                val original = chain.request()
+                val originalHttpUrl = original.url()
+                val originalHttpBuilder = originalHttpUrl.newBuilder()
+                if (settingData.getLang().isNotEmpty())
+                    originalHttpBuilder.addQueryParameter("language", settingData.getLang())
+                val requestBuilder = original.newBuilder()
+                requestBuilder.url(originalHttpBuilder.build())
+                requestBuilder.method(original.method(), original.body())
+                val request = requestBuilder.build()
+                chain.proceed(request)
+            }
             .addInterceptor(
                 LoggingInterceptor.Builder()
                     .loggable(BuildConfig.DEBUG)
