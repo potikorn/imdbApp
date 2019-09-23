@@ -15,6 +15,8 @@ class MovieDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var film: FilmResult? = null
     var recommendFilmList: Film? = null
+
+    private var onActionClick: OnActionClickListener? = null
     private val ITEM_TYPES = 4
     private val POSTER_TYPE = 0
     private val DETAIL_TYPE = 1
@@ -31,7 +33,7 @@ class MovieDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is PosterViewHolder -> holder.onBindData(film)
+            is PosterViewHolder -> holder.onBindData(film, onActionClick)
             is DetailViewHolder -> holder.onBindData(film)
             is GenresViewHolder -> holder.onBindData(film)
             else -> (holder as? RecommendViewHolder)?.onBindData(recommendFilmList)
@@ -56,5 +58,9 @@ class MovieDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     fun setRecommendMovie(recommendMovie: Film?) {
         recommendFilmList = recommendMovie
         notifyItemChanged(3)
+    }
+
+    fun setOnActionClickListener(callback: OnActionClickListener) {
+        onActionClick = callback
     }
 }

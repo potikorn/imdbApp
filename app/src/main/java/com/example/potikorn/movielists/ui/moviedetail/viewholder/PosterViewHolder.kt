@@ -11,13 +11,14 @@ import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
 import com.example.potikorn.movielists.BASE_IMAGE_PATH
 import com.example.potikorn.movielists.dao.FilmResult
-import com.example.potikorn.movielists.extensions.isSelectStated
+import com.example.potikorn.movielists.extensions.isChangeSelectStated
 import com.example.potikorn.movielists.extensions.loadImageView
+import com.example.potikorn.movielists.ui.moviedetail.OnActionClickListener
 import com.example.potikorn.movielists.widget.BlurProcessor
 import kotlinx.android.synthetic.main.item_poster_movie_detail.view.*
 
 class PosterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    fun onBindData(film: FilmResult?) {
+    fun onBindData(film: FilmResult?, callback: OnActionClickListener?) {
         itemView.ivPoster.loadImageView("$BASE_IMAGE_PATH${film?.posterPath}")
         Glide.with(itemView.context)
             .load("$BASE_IMAGE_PATH${film?.posterPath}")
@@ -36,8 +37,17 @@ class PosterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
                     }
                 }
             })
-        itemView.ivIconFavorite.setOnClickListener { it.isSelectStated() }
-        itemView.ivIconWishList.setOnClickListener { it.isSelectStated() }
-        itemView.ivIconRate.setOnClickListener { it.isSelectStated() }
+        itemView.ivIconFavorite.setOnClickListener {
+            film?.let { film ->
+                it.isChangeSelectStated()
+                callback?.onFavoriteClick(FilmResult().apply {
+                    id = film.id
+                    title = film.title
+                    posterPath = film.posterPath
+                })
+            }
+        }
+        itemView.ivIconWishList.setOnClickListener { it.isChangeSelectStated() }
+        itemView.ivIconRate.setOnClickListener { it.isChangeSelectStated() }
     }
 }

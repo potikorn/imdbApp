@@ -21,6 +21,7 @@ class RemoteContract {
   companion object {
 
     const val BASE_API_LAYER = "https://api.themoviedb.org/3/"
+    const val BASE_FIREBASE_API_LAYER = "https://us-central1-realtimedatabase-b9a7a.cloudfunctions.net/api/"
 
     const val ACCESS_KEY_API_LAYER = "2987da0f3538bdb63ed97b29c1571587"
   }

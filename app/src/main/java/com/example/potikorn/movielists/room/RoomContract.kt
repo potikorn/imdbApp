@@ -4,9 +4,10 @@ class RoomContract {
 
     companion object {
 
-        const val DATABASE_CURRENCY = "film.db"
+        const val DATABASE_APP = "film.db"
 
         const val TABLE_FILMS = "film"
+        const val TABLE_FAVORITE = "favorite"
 
         private const val SELECT_COUNT = "SELECT COUNT(*) FROM "
         private const val SELECT_FROM = "SELECT * FROM "

@@ -13,6 +13,7 @@ interface User {
     fun getSessionId(): String
     fun setSessionExpired(expiredDate: String?)
     fun getSessionExpired(): String
+    fun clear()
 }
 
 class UserData(private var pref: SharedPreferences) : User {
@@ -46,4 +47,6 @@ class UserData(private var pref: SharedPreferences) : User {
         pref.edit().putString(PREF_SESSION_EXPIRED, expiredDate).apply()
 
     override fun getSessionExpired(): String = pref.getString(PREF_SESSION_EXPIRED, "")
+
+    override fun clear() = pref.edit().clear().apply()
 }

@@ -7,7 +7,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import com.example.potikorn.movielists.R
 import com.example.potikorn.movielists.base.ui.BaseFragment
 import com.example.potikorn.movielists.base.ui.FragmentLifecycleOwner
@@ -25,6 +24,15 @@ import javax.inject.Inject
 
 class MovieListFragment : BaseFragment(), MovieAdapter.OnFilmClickListener,
     MovieAdapter.OnLoadMoreListener {
+
+    @Inject
+    lateinit var movieViewModelFactory: MovieViewModelFactory
+    private var spruceAnimator: Animator? = null
+    private val movieViewModel: MovieViewModel by lazy {
+        ViewModelProviders.of(this, movieViewModelFactory).get(MovieViewModel::class.java)
+    }
+    private val movieAdapter: MovieAdapter? by lazy { MovieAdapter() }
+    private var isRefresh = false
 
     override fun layoutToInflate(): Int = R.layout.fragment_movie_list
 
@@ -66,17 +74,6 @@ class MovieListFragment : BaseFragment(), MovieAdapter.OnFilmClickListener,
         movieViewModel.loadNowPlayingList()
     }
 
-    @Inject
-    lateinit var movieViewModelFactory: MovieViewModelFactory
-
-    private var spruceAnimator: Animator? = null
-
-    private val movieViewModel: MovieViewModel by lazy {
-        ViewModelProviders.of(this, movieViewModelFactory).get(MovieViewModel::class.java)
-    }
-    private val movieAdapter: MovieAdapter? by lazy { MovieAdapter() }
-    private var isRefresh = false
-
     override fun onFilmClick(film: FilmResult?) {
         startActivity(
             Intent(context, MovieDetailActivity::class.java)
@@ -98,7 +95,7 @@ class MovieListFragment : BaseFragment(), MovieAdapter.OnFilmClickListener,
                     }
                 }
                 movieAdapter?.setFilms(filmModels.movieDetails ?: arrayListOf())
-            } ?: Log.e("MAINFRAGMENT", "Data is null")
+            }
         })
     }
 
@@ -112,7 +109,6 @@ class MovieListFragment : BaseFragment(), MovieAdapter.OnFilmClickListener,
     }
 
     override fun onLoadMore() {
-        Log.e("Best", "ENTER LOAD MORE")
         movieViewModel.loadNowPlayingList()
     }
 
